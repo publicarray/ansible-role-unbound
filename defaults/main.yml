@@ -1,0 +1,14 @@
+server:
+  verbosity: 1
+  auto_trust_anchor_file: "root.key"
+  root_hints: "root.hints"
+  directory: "{{_unbound.conf_dir}}"
+optimise: false
+remote_control:
+  control_enable: false
+  control_interface: 127.0.0.1
+  control_port: 953
+  server_key_file: "unbound_server.key"
+  server_cert_file: "unbound_server.pem"
+  control_key_file: "unbound_control.key"
+  control_cert_file: "unbound_control.pem"

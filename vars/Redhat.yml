@@ -1,0 +1,3 @@
+_unbound:
+  conf_dir: /etc/unbound
+  memory_script: echo $(($(($((1024 * $((fgrep MemAvailable /proc/meminfo || fgrep MemTotal /proc/meminfo) | sed 's/[^0-9]//g' ))) - 12582912)) / 3))

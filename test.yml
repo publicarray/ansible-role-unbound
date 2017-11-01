@@ -1,0 +1,6 @@
+---
+- name: Install Secure DNS Resolver
+  hosts: all
+  remote_user: root
+  roles:
+    - { role: ansible-role-unbound, tags: [unbound] }

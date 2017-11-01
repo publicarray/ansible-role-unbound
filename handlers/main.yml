@@ -1,0 +1,21 @@
+---
+
+- name: Restart unbound
+  service:
+    name: unbound
+    state: restarted
+  listen: Restart unbound
+
+- name: Unbound save cache
+  shell: 'unbound-control dump_cache > /temp/unbound-cache'
+  listen: Restart unbound with cache
+
+- name: Restart unbound
+  service:
+    name: unbound
+    state: restarted
+  listen: Restart unbound with cache
+
+- name: Unbound load from cache
+  shell: 'unbound-control load_cache < /temp/unbound-cache'
+  listen: Restart unbound with cache
