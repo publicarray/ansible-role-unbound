@@ -44,7 +44,7 @@ Testing
 Requires python 2.7 and docker
 
 ```sh
-virtualenv venv
+virtualenv --no-setuptools venv
 source venv/bin/activate or source venv/bin/activate.fish
 pip install docker-py molecule
 molecule test

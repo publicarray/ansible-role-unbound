@@ -8,8 +8,8 @@ lint:
 platforms:
   - name: centos
     image: centos
-  - name: freebsd
-    image: auchida/freebsd
+  # - name: freebsd
+  #   image: auchida/freebsd:11
   - name: ubuntu
     image: ubuntu
   - name: debian
