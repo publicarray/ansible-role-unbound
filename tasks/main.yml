@@ -57,7 +57,8 @@
     executable: bash
   register: cache_memory
   check_mode: no
-
+  tags:
+    - skip_ansible_lint
 # - debug: msg="{{ cache_memory.stdout }}"
 
 - name: Set threads variable from shell command
@@ -66,7 +67,8 @@
     executable: bash
   register: threads
   check_mode: no
-
+  tags:
+    - skip_ansible_lint
 # - debug: msg="{{ threads.stdout }}"
 
 - name: Copy unbound configuration
@@ -83,6 +85,7 @@
 
 - name: Check unbound configuration
   command: unbound-checkconf
+  changed_when: false
   check_mode: no
 
 # SELinux

@@ -6,14 +6,14 @@ driver:
 lint:
   name: yamllint
 platforms:
-  # - name: centos
-  #   image: centos
-  # - name: freebsd11
-  #   image: auchida/freebsd:11
+  - name: centos
+    image: centos
+  - name: freebsd
+    image: auchida/freebsd
   - name: ubuntu
     image: ubuntu
-  # - name: debian
-  #   image: debian
+  - name: debian
+    image: debian
 provisioner:
   name: ansible
   lint:
