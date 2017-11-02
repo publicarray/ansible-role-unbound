@@ -1,0 +1,36 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: publicarray
+  description: Unbound DNS resolver
+  company: ""
+  license: "license (GNU)"
+  min_ansible_version: 2.2
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - precise
+        - raring
+        - saucy
+        - trusty
+        - xenial
+    - name: BSD
+      versions:
+        - all
+  galaxy_tags:
+    - unbound
+    - dns
+    - dnssec
+    - dnscrypt
+    - dnsovertls
+    - dns-over-tls

@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - role_under_test
+  vars:
+    unbound:
+      optimise: true

@@ -3,4 +3,4 @@
   hosts: all
   remote_user: root
   roles:
-    - { role: ansible-role-unbound, tags: [unbound] }
+    - { role: ansible-role-unbound }
