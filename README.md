@@ -36,3 +36,17 @@ Author Information
 ------------------
 
 An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+
+
+Testing
+-------
+
+Requires python 2.7 and docker
+
+```sh
+virtualenv venv
+source venv/bin/activate or source venv/bin/activate.fish
+pip install docker-py molecule
+molecule test
+deactivate
+```

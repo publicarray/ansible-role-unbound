@@ -22,7 +22,7 @@
 # in CentOS 7
 - name: Remove old bind formatted root.key for DNSSEC in RedHat systems
   file:
-    path: "{{unbound.server.auto_trust_anchor_file}}"
+    path: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
     state: absent
   when: ansible_os_family == 'RedHat'
 
@@ -30,7 +30,7 @@
   command: unbound-anchor -a "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: unbound_anchor_result
   changed_when: "unbound_anchor_result.rc == 1"
-  failed_when: false # ignore failure silently FixMe
+  failed_when: false  # ignore failure silently FixMe
   # Return value 1 = updated
   # Return value 0 = no update was necessary, updated with RFC5011tracking, or an error occurred
 
@@ -88,7 +88,7 @@
 # SELinux
 - name: Configure ports for SELinux (install policycoreutils-python)
   package:
-    name: policycoreutils-python # install semanage
+    name: policycoreutils-python  # install semanage
     state: present
   when: ansible_selinux.status != "Missing selinux Python library"
 

@@ -1,1 +1,4 @@
 *.retry
+*.pyc
+.molecule
+venv
