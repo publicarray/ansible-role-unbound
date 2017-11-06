@@ -6,14 +6,16 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: centos
-    image: centos
-  # - name: freebsd
-  #   image: auchida/freebsd:11
+  # - name: centos # ipv6 not working / need to start unbound manually [init system]
+  #   image: centos
+  # - name: centos7 # ipv6 not working / need to start unbound manually [init system]
+  #   image: geerlingguy/docker-centos7-ansible
   - name: ubuntu
     image: ubuntu
+  - name: ubuntu-trusty
+    image: ubuntu:14.04
   - name: debian
-    image: debian
+    image: geerlingguy/docker-debian9-ansible  # patched init
 provisioner:
   name: ansible
   lint:

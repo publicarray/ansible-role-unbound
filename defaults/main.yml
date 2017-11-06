@@ -3,6 +3,7 @@ optimise: false
 unbound:
   server:
     verbosity: 1
+    interface: 127.0.0.1
     auto_trust_anchor_file: "root.key"
     root_hints: "root.hints"
     directory: "{{_unbound.conf_dir}}"
