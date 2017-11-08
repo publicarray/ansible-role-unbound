@@ -2,3 +2,4 @@
 *.pyc
 .molecule
 venv
+group_vars

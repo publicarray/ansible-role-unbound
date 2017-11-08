@@ -16,3 +16,4 @@ _unbound:
     - openssl-devel
     - make
     - gcc
+    - tar

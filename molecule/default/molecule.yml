@@ -30,10 +30,10 @@ platforms:
     image: geerlingguy/docker-debian9-ansible  # patched init
     command: "/lib/systemd/systemd"
     privileged: true
-  - name: debian8-jessie
-    image: geerlingguy/docker-debian8-ansible  # patched init
-    command: "/lib/systemd/systemd"
-    privileged: true
+  # - name: debian8-jessie  # broken on unbount make -> no lto (Link Time Optimisation) with gcc 4.x
+  #   image: geerlingguy/docker-debian8-ansible  # patched init
+  #   command: "/lib/systemd/systemd"
+  #   privileged: true
 provisioner:
   name: ansible
   lint:
