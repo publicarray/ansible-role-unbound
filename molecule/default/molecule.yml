@@ -16,23 +16,23 @@ platforms:
     privileged: true
   # - name: centos6
   #   image: geerlingguy/docker-centos6-ansible  # patched init
-  #   command: "//sbin/init"
+  #   command: "/sbin/init"
   #   privileged: true
   - name: ubuntu16.04-xenial
     image: geerlingguy/docker-ubuntu1604-ansible  # patched init
-    command: "/usr/lib/systemd/systemd"
+    command: "/lib/systemd/systemd"
     privileged: true
   # - name: ubuntu14.04-trusty
-  #   image: geerlingguy/docker-ubuntu1404-ansible # patched init
+  #   image: geerlingguy/docker-ubuntu1404-ansible  # patched init
   #   command: "/sbin/init"
   #   privileged: true
   - name: debian9-stretch
     image: geerlingguy/docker-debian9-ansible  # patched init
-    command: "/usr/lib/systemd/systemd"
+    command: "/lib/systemd/systemd"
     privileged: true
   - name: debian8-jessie
     image: geerlingguy/docker-debian8-ansible  # patched init
-    command: "/usr/lib/systemd/systemd"
+    command: "/lib/systemd/systemd"
     privileged: true
 provisioner:
   name: ansible
