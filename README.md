@@ -1,12 +1,10 @@
 Ansible-Role-Unbound
 =========
 
+[![Build Status](https://travis-ci.com/publicarray/ansible-role-unbound.svg?token=DAqXkb6oM7gEUhTmp8BA&branch=master)](https://travis-ci.com/publicarray/ansible-role-unbound)
+
 Ansible role for Unbound DNS resolver
 
-Requirements
-------------
-
-None
 
 Role Variables
 --------------
@@ -35,8 +33,7 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
-
+Sebastian Schmidt (@publicarray)
 
 Testing
 -------

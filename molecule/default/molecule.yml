@@ -6,16 +6,34 @@ driver:
 lint:
   name: yamllint
 platforms:
-  # - name: centos # ipv6 not working / need to start unbound manually [init system]
-  #   image: centos
-  # - name: centos7 # ipv6 not working / need to start unbound manually [init system]
-  #   image: geerlingguy/docker-centos7-ansible
-  - name: ubuntu
-    image: ubuntu
-  - name: ubuntu-trusty
-    image: ubuntu:14.04
-  - name: debian
+  - name: fedora24
+    image: geerlingguy/docker-fedora24-ansible  # patched init
+    command: "/usr/lib/systemd/systemd"
+    privileged: true
+  - name: centos7  # ipv6 not working
+    image: geerlingguy/docker-centos7-ansible  # patched init
+    command: "/usr/lib/systemd/systemd"
+    privileged: true
+  # - name: centos6
+  #   image: geerlingguy/docker-centos6-ansible  # patched init
+  #   command: "//sbin/init"
+  #   privileged: true
+  - name: ubuntu16.04-xenial
+    image: geerlingguy/docker-ubuntu1604-ansible  # patched init
+    command: "/usr/lib/systemd/systemd"
+    privileged: true
+  # - name: ubuntu14.04-trusty
+  #   image: geerlingguy/docker-ubuntu1404-ansible # patched init
+  #   command: "/sbin/init"
+  #   privileged: true
+  - name: debian9-stretch
     image: geerlingguy/docker-debian9-ansible  # patched init
+    command: "/usr/lib/systemd/systemd"
+    privileged: true
+  - name: debian8-jessie
+    image: geerlingguy/docker-debian8-ansible  # patched init
+    command: "/usr/lib/systemd/systemd"
+    privileged: true
 provisioner:
   name: ansible
   lint:

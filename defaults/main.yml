@@ -1,12 +1,50 @@
 ---
-optimise: false
+unbound_compile: true
+unbound_compile_version: 1.6.7
+unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
+unbound_optimise: true  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
+unbound_memory: 100  # percent
+unbound_domain: example.com  # common name for cert signing request
+unbound_cert_provider: selfsigned  # must be one of: selfsigned,assertonly,acme. no other provider implemented just yet
 unbound:
   server:
-    verbosity: 1
-    interface: 127.0.0.1
+    verbosity: 4
+    use_syslog: no
+    log-time-ascii: yes
+    logfile: "unbound.log"
+    # interface: 127.0.0.1
+    access-control: 0.0.0.0/0 allow
     auto_trust_anchor_file: "root.key"
     root_hints: "root.hints"
-    directory: "{{_unbound.conf_dir}}"
+    # if not compiling use distribution default else use unbound default
+    directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+    chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+    pidfile: "unbound.pid"
+    username: "{{_unbound.user}}"
+    #
+    # DNS-OVER-TlS
+    # listen on all interfaces on port 853, answer queries from the local subnet.
+    interface: [0.0.0.0@853, '::0@853']  # Available in 1.6.? and later
+    ssl_service_key: "private.key"  # Available in 1.6.? and later
+    ssl_service_pem: "certificate.pem"  # Available in 1.6.? and later
+    ssl_port: 853
+    incoming_num_tcp: 100  # Number of simultaneous incoming TCP connections per thread to allow
+    # Listen on UDP but still issues queries upstream over UDP.
+    udp_upstream_without_downstream: yes  # Available in 1.6.7 and later
+    qname_minimisation: yes  # Enable QNAME minimisation to increase client privacy. Available in 1.6.? and later
+    hide_identity: yes
+    hide_version: yes
+    hide_trustanchor: yes  # Available in 1.6.2 and later
+    #
+    num_queries_per_thread: 4096
+    outgoing_range: 8192
+    so_reuseport: yes  # check that your kernel supports this. Available in 1.6.? and later
+    rrset_roundrobin: yes
+    prefetch: yes
+    prefetch_key: yes
+    do_not_query_localhost: yes
+    use_caps_for_id: yes
+    #
   remote_control:
     control_enable: false
     control_interface: 127.0.0.1

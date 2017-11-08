@@ -1,0 +1,91 @@
+---
+- name: Install openssl
+  package:
+    name: openssl
+    state: present
+
+- name: Install libssl-dev - Debian
+  package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - libssl-dev
+  when: ansible_os_family == 'Debian'
+
+- name: Install python-dev and libffi-dev - Ubuntu trusty
+  package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - libffi-dev
+    - python-dev
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+
+- name: Install pip
+  package:
+    name: "{{_unbound.pip}}"
+    state: present
+
+- name: Install pyOpenSSL
+  pip:
+    name: "{{item}}"
+    state: latest
+  with_items:
+    - setuptools
+    - pyopenssl
+
+- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  openssl_privatekey:
+    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+
+- name: Generate an OpenSSL Certificate Signing Request
+  openssl_csr:
+    path: "{{unbound.server.directory}}/request.csr"
+    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+    common_name: "{{unbound_domain}}"
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
+    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+    csr_path: "{{unbound.server.directory}}/request.csr"
+    provider: "{{unbound_cert_provider}}"
+
+- name: Get Fingerprint
+  shell: openssl req -pubkey < *.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+  args:
+    executable: bash
+  register: unbound_fingerprint
+  changed_when: false
+
+- name: Display Fingerprint and example Stubby config
+  debug:
+    msg:
+      upstream_recursive_servers:
+        address_data: "{{ansible_default_ipv4.address if ansible_default_ipv4 is defined else \"<the server's ip address>\"}}"
+        tls_auth_name: "{{unbound_domain}}"
+        tls_pubkey_pinset:
+          digest: "sha256"
+          value: "{{unbound_fingerprint.stdout}}"
+
+# - name: Install certbot
+#   get_url:
+#     url: https://dl.eff.org/certbot-auto
+#     dest: /var/certbot-auto
+#     mode: 0774
+
+# - name: Get Let's Encrypt Certificate
+#   command: "/var/certbot-auto certonly --standalone -d {{unbound_domain}} --csr {{unbound.server.directory}}/request.csr --register-unsafely-without-email --agree-tos --noninteractive"
+#     chdir: "{{unbound.server.directory}}"
+
+
+# openssl req -newkey rsa:2048 -nodes -subj '/CN=localhost' -keyout unbound_domain.key -out unbound_domain.csr
+
+# openssl req -x509 -nodes -sha256 -subj '/CN=localhost' -newkey rsa:4096 -keyout privatekey.key -out publiccert.pem -days 365
+# openssl req -key privatekey.key -new -out request.csr
+
+
+# certbot certonly -d dnsovertls.seby.io --csr request.csr --preferred-challenges dns --manual --register-unsafely-without-email --agree-tos
+
+
+# openssl req -pubkey < *.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64

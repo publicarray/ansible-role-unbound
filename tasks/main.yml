@@ -4,17 +4,39 @@
     file: "{{ ansible_os_family }}.yml"
   tags: [always]
 
-- name: Install unbound
+- name: Display init system
+  debug:
+    var: ansible_service_mgr
+
+- name: Install bash (used for shell scripts/commands)
+  package:
+    name: bash
+    state: present
+
+- name: Install unbound from package
   package:
     name: unbound
     state: present
-#  when: ansible_os_family != 'FreeBSD'
+  when: unbound_compile is not defined or unbound_compile == false
 
-# - name: Install unbound from port
-#   portinstall:
-#     name: unbound
-#     state: present
-#   when: ansible_os_family == 'FreeBSD'
+- name: Prepare to compile unbound
+  import_tasks: compile.yml
+  when: unbound_compile is defined and unbound_compile == true
+
+- name: Get unbound version
+  shell: "unbound -h | grep Version"
+  args:
+    executable: bash
+  register: unbound_version
+  changed_when: false
+
+- name: Display unbound version
+  debug:
+    msg: "{{unbound_version.stdout}}"
+
+- name: Prepare dns-over-tls
+  import_tasks: dns-over-tls.yml
+  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_domain is defined
 
 # fix: ldns error while converting string to RR: Syntax error, could not parse the RR's TTL
 #     failed to load trust anchor from /etc/unbound/root.key at line x, skipping
@@ -30,18 +52,14 @@
   command: unbound-anchor -a "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: unbound_anchor_result
   changed_when: "unbound_anchor_result.rc == 1"
-  failed_when: false  # ignore failure silently FixMe
+  failed_when: false  # ignore failure silently
   # Return value 1 = updated
   # Return value 0 = no update was necessary, updated with RFC5011tracking, or an error occurred
 
-- name: Check if unbound_control.pem file exists
-  stat:
-    path: "{{unbound.server.directory}}/unbound_control.pem"
-  register: generate_control_cert
-
-- name: Setup unbound-control
-  when: not generate_control_cert.stat.exists
-  command: unbound-control-setup
+- name: Setup unbound-control keys
+  command: "unbound-control-setup -d {{unbound.server.directory}}"
+  args:
+    creates: "{{unbound.server.directory}}/unbound_control.pem"
 
 # https://www.internic.net/domain/named.cache
 # Please update root.hints every six months or so
@@ -50,13 +68,13 @@
     url: https://www.internic.net/domain/named.root
     dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
 
-# https://github.com/jedisct1/dnscrypt-server-docker/blob/master/unbound.sh
 - name: Set cache_memory variable from shell command
-  shell: "{{_unbound.memory_script}}"
+  shell: "{{_unbound.pysical_memory_script}}"
   args:
     executable: bash
   register: cache_memory
   check_mode: no
+  changed_when: false
   tags:
     - skip_ansible_lint
 # - debug: msg="{{ cache_memory.stdout }}"
@@ -67,6 +85,7 @@
     executable: bash
   register: threads
   check_mode: no
+  changed_when: false
   tags:
     - skip_ansible_lint
 # - debug: msg="{{ threads.stdout }}"
@@ -75,16 +94,18 @@
   template:
     src: unbound.conf
     dest: "{{unbound.server.directory}}/unbound.conf"
+  notify: Restart unbound
 
 - name: Set appropreate file permissions
   file:
-    path: "{{unbound.server.directory}}"
-    owner: unbound
-    group: unbound
-    recurse: yes
+    path: "{{item}}"
+    owner: "{{unbound.server.username}}"
+    group: "{{unbound.server.username}}"
+  with_items:
+    - "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
 
 - name: Check unbound configuration
-  command: unbound-checkconf
+  command: "unbound-checkconf {{unbound.server.directory}}/unbound.conf"
   changed_when: false
   check_mode: no
 
@@ -110,6 +131,31 @@
     setype: dns_port_t
     state: present
   when: ansible_selinux.status != "Missing selinux Python library"
+
+# /etc/fstab
+# mount -t devfs devfs  /usr/local/etc/unbound/dev
+- name: Create /dev folder to chroot
+  file:
+    path: "{{unbound.server.directory}}/dev/"
+    state: directory
+
+- name: Mount devfs to chroot
+  mount:
+    path: "{{unbound.server.directory}}/dev"
+    src: /dev
+    fstype: devfs
+    opts: ro
+    state: mounted
+  when: ansible_os_family == 'FreeBSD'  # TODO work with jails
+
+# - name: Mount devfs to chroot - Debian
+#   mount:
+#     path: "{{unbound.server.directory}}/dev"
+#     src: /dev
+#     fstype: devtmpfs
+#     opts: ro
+#     state: mounted
+#   when: ansible_os_family == 'Debian'
 
 - name: Ensure unbound is running
   service:

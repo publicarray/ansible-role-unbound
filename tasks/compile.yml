@@ -1,0 +1,86 @@
+---
+- name: Install python-apt
+  package:
+    name: python-apt
+    state: present
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+
+- name: Add ppa:chris-lea/libsodium to apt repository - Ubuntu Trusty
+  apt_repository:
+    repo: 'ppa:chris-lea/libsodium'
+    codename: 'trusty'
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+
+- name: Install unbound dependencies
+  package:
+    name: "{{item}}"
+    state: present
+  with_items: "{{_unbound.dependencies}}"
+
+- name: Install unbound from port
+  portinstall:
+    name: unbound
+    state: present
+  when: ansible_os_family == 'FreeBSD'
+
+- name: Create /var/src directory if it doesn't exist
+  file:
+    path: /var/src/
+    state: directory
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Create {{unbound.server.directory}} directory if it doesn't exist
+  file:
+    path: "{{unbound.server.directory}}"
+    state: directory
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Get unbound source
+  unarchive:
+    src: "http://unbound.nlnetlabs.nl/downloads/unbound-{{unbound_compile_version}}.tar.gz"
+    dest: /var/src/
+    remote_src: yes
+  when: ansible_os_family != 'FreeBSD'
+
+- name: ./configure unbound
+  command: "./configure {{unbound_compile_config}}"
+  args:
+    chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    creates: Makefile
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Make unbound
+  make:
+    chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    target: install
+  become: yes
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Tell systenm about new shared libraries - Debian
+  command: ldconfig
+  when: ansible_distribution == 'Debian'
+
+- name: Create unbound group
+  group:
+    name: "{{unbound.server.username|default(unbound)}}"
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Create unbound user
+  user:
+    name: "{{unbound.server.username|default(unbound)}}"
+    group: "{{unbound.server.username|default(unbound)}}"
+    shell: /dev/null
+    createhome: no
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Copy unbound.service
+  copy:
+    remote_src: true
+    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.service
+    dest: /etc/systemd/system/unbound.service
+  when: ansible_service_mgr == 'systemd'
+
+- name: Reload systemd daemon to pick up config changes
+  systemd:
+    daemon_reload: yes
+  when: ansible_service_mgr == 'systemd'
