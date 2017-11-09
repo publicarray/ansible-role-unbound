@@ -38,3 +38,4 @@
           use_caps_for_id: yes
         remote_control:
           control_enable: true
+          control_interface: 127.0.0.1

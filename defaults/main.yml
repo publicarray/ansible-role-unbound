@@ -21,5 +21,5 @@ unbound:  # https://unbound.net/documentation/unbound.conf.html
     # if not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
     chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
-  remote-control:
-    control-enable: false
+  remote_control:
+    control_enable: false

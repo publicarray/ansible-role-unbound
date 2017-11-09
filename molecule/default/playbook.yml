@@ -37,3 +37,6 @@
           use_caps_for_id: yes
         remote_control:
           control_enable: true
+          # fix no ipv6 -> https://github.com/boot2docker/boot2docker/issues/1257
+          # test with: `sysctl -a | grep disable_ipv6`
+          control_interface: 127.0.0.1
