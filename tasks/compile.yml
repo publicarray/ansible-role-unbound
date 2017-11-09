@@ -1,5 +1,5 @@
 ---
-- name: Install python-apt
+- name: Install python-apt - Ubuntu Trusty
   package:
     name: python-apt
     state: present
@@ -17,7 +17,7 @@
     state: present
   with_items: "{{_unbound.dependencies}}"
 
-- name: Install unbound from port
+- name: Install unbound from port - FreeBSD
   portinstall:
     name: unbound
     state: present
@@ -56,9 +56,10 @@
   become: yes
   when: ansible_os_family != 'FreeBSD'
 
+# Fix: error while loading shared libraries: libunbound.so.2: cannot open shared object file: No such file or directory
 - name: Tell systenm about new shared libraries - Debian
   command: ldconfig
-  when: ansible_distribution == 'Debian'
+  when: ansible_os_family == 'Debian'
 
 - name: Create unbound group
   group:

@@ -36,7 +36,7 @@
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
-  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_domain is defined
+  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined
 
 # fix: ldns error while converting string to RR: Syntax error, could not parse the RR's TTL
 #     failed to load trust anchor from /etc/unbound/root.key at line x, skipping
@@ -132,9 +132,7 @@
     state: present
   when: ansible_selinux.status != "Missing selinux Python library"
 
-# /etc/fstab
-# mount -t devfs devfs  /usr/local/etc/unbound/dev
-- name: Create /dev folder to chroot
+- name: Create /dev folder to chroot - FreeBSD
   file:
     path: "{{unbound.server.directory}}/dev/"
     state: directory
@@ -148,14 +146,14 @@
     state: mounted
   when: ansible_os_family == 'FreeBSD'  # TODO work with jails
 
-# - name: Mount devfs to chroot - Debian
-#   mount:
-#     path: "{{unbound.server.directory}}/dev"
-#     src: /dev
-#     fstype: devtmpfs
-#     opts: ro
-#     state: mounted
-#   when: ansible_os_family == 'Debian'
+- name: Mount devtmpfs to chroot - Debian and RedHat
+  mount:
+    path: "{{unbound.server.directory}}/dev"
+    src: /dev
+    fstype: devtmpfs
+    opts: ro
+    state: mounted
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
 - name: Ensure unbound is running
   service:
