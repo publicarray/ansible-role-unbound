@@ -6,10 +6,10 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: fedora24
-    image: geerlingguy/docker-fedora24-ansible  # patched init
-    command: "/usr/lib/systemd/systemd"
-    privileged: true
+  # - name: fedora24
+  #   image: geerlingguy/docker-fedora24-ansible  # patched init
+  #   command: "/usr/lib/systemd/systemd"
+  #   privileged: true
   - name: centos7  # ipv6 not working
     image: geerlingguy/docker-centos7-ansible  # patched init
     command: "/usr/lib/systemd/systemd"

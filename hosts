@@ -1,6 +1,7 @@
-[freebsd]
+[bsd]
 192.168.56.101
+192.168.56.102
 
-[freebsd:vars]
+[bsd:vars]
 #ansible_python_interpreter=/usr/bin/env python3
 ansible_python_interpreter=/usr/bin/env python
