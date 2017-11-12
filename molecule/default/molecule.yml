@@ -6,33 +6,33 @@ driver:
 lint:
   name: yamllint
 platforms:
-  # - name: fedora24
+  # - name: fedora24  # [init] Reload systemd daemon to pick up config changes -> failure 1 during daemon-reload: Failed to connect to bus: No such file or directory
   #   image: geerlingguy/docker-fedora24-ansible  # patched init
-  #   command: "/usr/lib/systemd/systemd"
+  #   command: /usr/lib/systemd/systemd
   #   privileged: true
-  - name: centos7  # ipv6 not working
+  - name: centos7  # ipv6 not working /Unable to start service unbound
     image: geerlingguy/docker-centos7-ansible  # patched init
-    command: "/usr/lib/systemd/systemd"
+    command: /usr/lib/systemd/systemd
     privileged: true
-  # - name: centos6
+  # - name: centos6  # broken build -> undefined reference to `sodium_free'\n/var/src/unbound-1.6.7/dnscrypt/dnscrypt.c'`
   #   image: geerlingguy/docker-centos6-ansible  # patched init
-  #   command: "/sbin/init"
+  #   command: /sbin/init
   #   privileged: true
   - name: ubuntu16.04-xenial
     image: geerlingguy/docker-ubuntu1604-ansible  # patched init
-    command: "/lib/systemd/systemd"
+    command: /lib/systemd/systemd
     privileged: true
-  # - name: ubuntu14.04-trusty
+  # - name: ubuntu14.04-trusty  # /etc/init.d/unbound: 22: .: Can't open /etc/rc.d/init.d/functions
   #   image: geerlingguy/docker-ubuntu1404-ansible  # patched init
-  #   command: "/sbin/init"
+  #   command: /sbin/init
   #   privileged: true
   - name: debian9-stretch
     image: geerlingguy/docker-debian9-ansible  # patched init
-    command: "/lib/systemd/systemd"
+    command: /lib/systemd/systemd
     privileged: true
-  # - name: debian8-jessie  # broken on unbount make -> no lto (Link Time Optimisation) with gcc 4.x
+  # - name: debian8-jessie  # broken on unbound make -> no lto (Link Time Optimisation) with gcc 4.x
   #   image: geerlingguy/docker-debian8-ansible  # patched init
-  #   command: "/lib/systemd/systemd"
+  #   command: /lib/systemd/systemd
   #   privileged: true
 provisioner:
   name: ansible

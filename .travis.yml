@@ -14,4 +14,4 @@ install:
   - pip install molecule docker-py
 
 script:
-  - molecule test
+  - travis_wait 40 "molecule test"

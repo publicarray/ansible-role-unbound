@@ -42,6 +42,13 @@
     remote_src: yes
   when: ansible_os_family != 'FreeBSD'
 
+# Fix: Unable to start service unbound on debian9-stretch -> (code=exited, status=226/NAMESPACE)
+- name: Update contrib/unbound.service - Debian9 stretch
+  template:
+    src: unbound.service.in
+    dest: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.service.in
+  when: ansible_service_mgr == 'systemd' and ansible_distribution == 'Debian' and ansible_distribution_release == 'stretch'
+
 - name: ./configure unbound
   command: "./configure {{unbound_compile_config}}"
   args:
@@ -74,11 +81,34 @@
     createhome: no
   when: ansible_os_family != 'FreeBSD'
 
-- name: Copy unbound.service
+- name: Copy unbound.init - Debian
+  copy:
+    remote_src: true
+    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.init
+    dest: /etc/init.d/unbound
+    mode: 751
+  when: ansible_service_mgr == 'service' and ansible_os_family == 'Debian'
+
+# - name: Copy unbound.init - Fedora
+#   copy:
+#     remote_src: true
+#     src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.init_fedora
+#     dest: /etc/init.d/unbound
+#     mode: 751
+#   when: ansible_service_mgr == 'service' and ansible_os_family == 'RedHat'
+
+- name: Copy contrib/unbound.service - systemd
   copy:
     remote_src: true
     src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.service
     dest: /etc/systemd/system/unbound.service
+  when: ansible_service_mgr == 'systemd'
+
+- name: Copy contrib/unbound.socket - systemd
+  copy:
+    remote_src: true
+    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.socket
+    dest: /etc/init.d/unbound.init
   when: ansible_service_mgr == 'systemd'
 
 - name: Reload systemd daemon to pick up config changes

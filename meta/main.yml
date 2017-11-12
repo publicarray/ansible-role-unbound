@@ -3,17 +3,20 @@ dependencies: []
 
 galaxy_info:
   author: publicarray
-  description: Unbound DNS resolver
+  description: Unbound - Validating, recursive, and caching DNS resolver
   company: ""
-  license: "license (GNU)"
+  license: "license (BSD)"
   min_ansible_version: 2.2
   platforms:
     - name: Debian
       versions:
-        - all
+        - 9
     - name: Ubuntu
       versions:
-        - all
+        - xenial
+    - name: Centos
+      versions:
+        - 7
     - name: freeBSD
       versions:
         - all
