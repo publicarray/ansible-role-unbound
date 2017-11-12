@@ -68,41 +68,19 @@
     url: https://www.internic.net/domain/named.root
     dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
 
-- name: Set cache_memory variable from shell command
-  shell: "{{_unbound.pysical_memory_script}}"
-  args:
-    executable: bash
-  register: cache_memory
-  check_mode: no
-  changed_when: false
-  tags:
-    - skip_ansible_lint
-# - debug: msg="{{ cache_memory.stdout }}"
-
-- name: Set threads variable from shell command
-  shell: "if [ $(nproc) -gt 1 ]; then echo $(($(nproc)-1)); else echo 1; fi"
-  args:
-    executable: bash
-  register: threads
-  check_mode: no
-  changed_when: false
-  tags:
-    - skip_ansible_lint
-# - debug: msg="{{ threads.stdout }}"
-
 - name: Copy unbound configuration
   template:
     src: unbound.conf
     dest: "{{unbound.server.directory}}/unbound.conf"
   notify: Restart unbound
 
-- name: Set appropreate file permissions
-  file:
-    path: "{{item}}"
-    owner: "{{unbound.server.username}}"
-    group: "{{unbound.server.username}}"
-  with_items:
-    - "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
+# - name: Set appropreate file permissions
+#   file:
+#     path: "{{item}}"
+#     owner: "{{unbound.server.username}}"
+#     group: "{{unbound.server.username}}"
+#   with_items:
+#     - "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
 
 - name: Check unbound configuration
   command: "unbound-checkconf {{unbound.server.directory}}/unbound.conf"
@@ -114,7 +92,7 @@
   package:
     name: policycoreutils-python  # install semanage
     state: present
-  when: ansible_selinux.status != "Missing selinux Python library"
+  when: ansible_selinux is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Configure ports for SELinux (mark udp port for dns)
   seport:
@@ -122,7 +100,7 @@
     proto: udp
     setype: dns_port_t
     state: present
-  when: ansible_selinux.status != "Missing selinux Python library"
+  when: ansible_selinux is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Configure ports for SELinux (mark tcp port for dns)
   seport:
@@ -160,4 +138,4 @@
     name: unbound
     state: started
     enabled: true
-    pattern: unbound
+    # pattern: unbound

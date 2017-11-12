@@ -3,11 +3,6 @@ _unbound:
   pip: py27-pip
   user: unbound
   conf_dir: /usr/local/etc/unbound
-  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
-  # https://github.com/jedisct1/dnscrypt-server-docker/blob/master/unbound.sh
-  memory_script: echo $(($(($(sysctl -n hw.pagesize) * $(sysctl -n vm.stats.vm.v_free_count) - 12582912)) / 3))
-  free_memory_script: echo $(($(($(sysctl -n hw.pagesize) * $(sysctl -n vm.stats.vm.v_free_count)))))
-  pysical_memory_script: sysctl hw.physmem | awk '{print $2}'  # bytes
   dependencies:
     - libevent
     - libsodium

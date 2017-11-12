@@ -3,11 +3,6 @@ _unbound:
   pip: python2-pip
   user: unbound
   conf_dir: /etc/unbound
-  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
-  # https://github.com/jedisct1/dnscrypt-server-docker/blob/master/unbound.sh
-  memory_script: echo $(($(($((1024 * $((fgrep MemAvailable /proc/meminfo || fgrep MemTotal /proc/meminfo) | sed 's/[^0-9]//g' ))) - 12582912)) / 3))
-  free_memory_script: echo $((1024 * $((fgrep MemAvailable /proc/meminfo) | sed 's/[^0-9]//g' )))
-  pysical_memory_script: echo $((1024 * $((fgrep MemTotal /proc/meminfo) | sed 's/[^0-9]//g' )))  # bytes
   dependencies:
     - ldns-devel
     - libevent-devel

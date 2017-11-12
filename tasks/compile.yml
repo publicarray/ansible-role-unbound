@@ -59,13 +59,23 @@
 - name: Make unbound
   make:
     chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    params:
+      NUM_THREADS: "{{ansible_processor_cores|default(1) * ansible_processor_count|default(1)}}"
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Make install unbound
+  make:
+    chdir: "/var/src/unbound-{{unbound_compile_version}}"
     target: install
   become: yes
+  register: result
+  changed_when: false
   when: ansible_os_family != 'FreeBSD'
 
 # Fix: error while loading shared libraries: libunbound.so.2: cannot open shared object file: No such file or directory
-- name: Tell systenm about new shared libraries - Debian
+- name: Tell system about new shared libraries - Debian
   command: ldconfig
+  changed_when: false
   when: ansible_os_family == 'Debian'
 
 - name: Create unbound group
