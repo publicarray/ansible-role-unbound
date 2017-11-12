@@ -38,20 +38,20 @@
           # test with: `sysctl -a | grep disable_ipv6`
           control_interface: 127.0.0.1
   pre_tasks:
-    - name: Update apt cache
+    - name: Update apt cache - Debian
       apt: update_cache=yes cache_valid_time=600
       when: ansible_os_family == 'Debian'
       changed_when: false
 
-    - name: Install dig
+    - name: Install dig - Debian
       package: name=dnsutils state=present
       when: ansible_os_family == 'Debian'
 
-    - name: Install dig
+    - name: Install dig - RedHat
       package: name=bind-utils state=present
       when: ansible_os_family == 'RedHat'
 
-    - name: Install dig
+    - name: Install dig - FreeBSD
       package: name=bind-tools state=present
       when: ansible_os_family == 'FreeBSD'
   roles:

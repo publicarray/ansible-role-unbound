@@ -38,15 +38,34 @@
   import_tasks: dns-over-tls.yml
   when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined
 
+###
 # fix: ldns error while converting string to RR: Syntax error, could not parse the RR's TTL
 #     failed to load trust anchor from /etc/unbound/root.key at line x, skipping
 #     error reading auto-trust-anchor-file
 # in CentOS 7
+- name: Check if {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}} exist
+  stat:
+    path: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
+  register: auto_trust_anchor_file
+
+- name: Install awk (used for shell scripts/commands)
+  package:
+    name: gawk
+    state: present
+  when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True
+
+- name: Check whether {{unbound.server.auto_trust_anchor_file}} contains "root key in bind format"
+  command: awk '/root key in bind format/' {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}
+  register: is_bind_format
+  changed_when: false
+  when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True
+
 - name: Remove old bind formatted root.key for DNSSEC in RedHat systems
   file:
     path: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
     state: absent
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True and is_bind_format.stdout != ""
+### endfix
 
 - name: Setup or update of the root trust anchor for DNSSEC validation
   command: unbound-anchor -a "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
@@ -138,5 +157,4 @@
     name: unbound
     state: started
     enabled: true
-  changed_when: false
     # pattern: unbound

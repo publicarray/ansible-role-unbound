@@ -21,7 +21,7 @@ script:
   - ${PWD}/tests/test.sh
 
   # Make sure dns can be queried.
-  - 'docker exec --tty ${container_id} dig @127.0.0.1 | grep "NOERROR"'
+  - docker exec --tty ${container_id} dig @127.0.0.1 | grep "NOERROR"
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
