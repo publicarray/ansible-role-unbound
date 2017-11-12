@@ -1,9 +1,5 @@
 ---
-- name: Converge
-  hosts: all
-  remote_user: root
-  roles:
-    - role: ansible-role-unbound
+- hosts: all
   vars:
     - unbound_compile: true
     - unbound_optimise: true
@@ -41,3 +37,22 @@
           # fix no ipv6 -> https://github.com/boot2docker/boot2docker/issues/1257
           # test with: `sysctl -a | grep disable_ipv6`
           control_interface: 127.0.0.1
+  pre_tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+    - name: Install dig
+      package: name=dnsutils state=present
+      when: ansible_os_family == 'Debian'
+
+    - name: Install dig
+      package: name=bind-utils state=present
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install dig
+      package: name=bind-tools state=present
+      when: ansible_os_family == 'FreeBSD'
+  roles:
+    - role_under_test
