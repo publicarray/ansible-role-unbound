@@ -20,12 +20,8 @@ script:
   # Run tests.
   - ${PWD}/tests/test.sh
 
-  # Setup test site.
-  - 'docker exec ${container_id} mkdir -p /var/www/test'
-  - 'docker exec ${container_id} bash -c "echo Success >| /var/www/test/index.html"'
-
   # Make sure dns can be queried.
-  - 'docker exec --tty ${container_id} env TERM=xterm dig @127.0.0.1 | grep "status: NOERROR"'
+  - 'docker exec --tty ${container_id} dig @127.0.0.1 | grep "NOERROR"'
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

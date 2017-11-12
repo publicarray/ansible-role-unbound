@@ -92,7 +92,7 @@
   package:
     name: policycoreutils-python  # install semanage
     state: present
-  when: ansible_selinux is defined and ansible_selinux.status != "Missing selinux Python library"
+  when: ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Configure ports for SELinux (mark udp port for dns)
   seport:
@@ -100,7 +100,7 @@
     proto: udp
     setype: dns_port_t
     state: present
-  when: ansible_selinux is defined and ansible_selinux.status != "Missing selinux Python library"
+  when: ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Configure ports for SELinux (mark tcp port for dns)
   seport:
@@ -108,7 +108,7 @@
     proto: tcp
     setype: dns_port_t
     state: present
-  when: ansible_selinux.status != "Missing selinux Python library"
+  when:  ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Create /dev folder to chroot - FreeBSD
   file:
@@ -138,4 +138,5 @@
     name: unbound
     state: started
     enabled: true
+  changed_when: false
     # pattern: unbound
