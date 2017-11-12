@@ -33,6 +33,8 @@
   with_items:
     - setuptools
     - pyopenssl
+  tags:
+    - skip_ansible_lint
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   openssl_privatekey:
