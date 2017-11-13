@@ -36,13 +36,19 @@
   when: ansible_os_family != 'FreeBSD'
 
 - name: Get unbound source
-  unarchive:
-    src: "http://unbound.nlnetlabs.nl/downloads/unbound-{{unbound_compile_version}}.tar.gz"
+  get_url:
+    url: "https://unbound.nlnetlabs.nl/downloads/unbound-{{unbound_compile_version}}.tar.gz"
     dest: /var/src/
-    remote_src: yes
+    checksum: "sha256:{{ unbound_compile_sha256 }}"
+
+- name: Get tar -xzf source
+  unarchive:
+    src: "/var/src/unbound-{{unbound_compile_version}}.tar.gz"
+    dest: /var/src/
+    creates: /var/src/unbound-{{unbound_compile_version}}/README
   when: ansible_os_family != 'FreeBSD'
 
-# Fix: Unable to start service unbound on debian9-stretch -> (code=exited, status=226/NAMESPACE)
+# Fix: Unable to start service unbound-> (code=exited, status=226/NAMESPACE)
 - name: Update contrib/unbound.service - Debian9 stretch
   template:
     src: unbound.service.in
