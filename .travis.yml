@@ -2,11 +2,23 @@
 services: docker
 
 env:
-  - distro: centos7
-  - distro: ubuntu1604
-  # - distro: ubuntu1404
-  - distro: debian9
-  # - distro: debian8
+  matrix:
+    - distro=centos7 playbook=package-test.yml
+    - distro=ubuntu1604 playbook=package-test.yml
+    - distro=ubuntu1404 playbook=package-test.yml
+    - distro=debian9 playbook=package-test.yml
+    - distro=debian8 playbook=package-test.yml
+
+    - distro=centos7 playbook=compile-test.yml
+    - distro=ubuntu1604 playbook=compile-test.yml
+    - distro=ubuntu1404 playbook=compile-test.yml
+    - distro=debian9 playbook=compile-test.yml
+    - distro=debian8 playbook=tests/compile-test.yml
+
+matrix:
+  exclude:
+    - env: distro=debian8
+    - env: distro=ubuntu1404
 
 script:
   # Configure test script so we can run extra tests after playbook is run.

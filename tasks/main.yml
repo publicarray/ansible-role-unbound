@@ -24,7 +24,7 @@
   when: unbound_compile is defined and unbound_compile == true
 
 - name: Get unbound version
-  shell: "unbound -h | grep Version"
+  shell: "unbound -h | grep Version | cut -d ' ' -f2"
   args:
     executable: bash
   register: unbound_version
@@ -38,12 +38,26 @@
   import_tasks: dns-over-tls.yml
   when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined
 
+# fix: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=763901
+- name: Set unbound folder permissions
+  file:
+    path: "{{unbound.server.directory}}"
+    owner: "{{unbound.server.username}}"
+    group: "{{unbound.server.username}}"
+
+# https://www.internic.net/domain/named.cache
+# Please update root.hints every six months or so
+- name: Get root-hints cache
+  get_url:
+    url: https://www.internic.net/domain/named.root
+    dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
+
 ###
 # fix: ldns error while converting string to RR: Syntax error, could not parse the RR's TTL
 #     failed to load trust anchor from /etc/unbound/root.key at line x, skipping
 #     error reading auto-trust-anchor-file
 # in CentOS 7
-- name: Check if {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}} exist
+- name: Check if auto_trust_anchor_file exist
   stat:
     path: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: auto_trust_anchor_file
@@ -54,7 +68,7 @@
     state: present
   when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True
 
-- name: Check whether {{unbound.server.auto_trust_anchor_file}} contains "root key in bind format"
+- name: Check whether auto_trust_anchor_file contains "root key in bind format"
   command: awk '/root key in bind format/' {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}
   register: is_bind_format
   changed_when: false
@@ -80,26 +94,11 @@
   args:
     creates: "{{unbound.server.directory}}/unbound_control.pem"
 
-# https://www.internic.net/domain/named.cache
-# Please update root.hints every six months or so
-- name: Get root-hints cache
-  get_url:
-    url: https://www.internic.net/domain/named.root
-    dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
-
 - name: Copy unbound configuration
   template:
     src: unbound.conf
     dest: "{{unbound.server.directory}}/unbound.conf"
   notify: Restart unbound
-
-# - name: Set appropreate file permissions
-#   file:
-#     path: "{{item}}"
-#     owner: "{{unbound.server.username}}"
-#     group: "{{unbound.server.username}}"
-#   with_items:
-#     - "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
 
 - name: Check unbound configuration
   command: "unbound-checkconf {{unbound.server.directory}}/unbound.conf"

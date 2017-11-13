@@ -1,6 +1,7 @@
 ---
 unbound_compile: false
 unbound_compile_version: 1.6.7  # https://unbound.net/download.html
+# solaris: --with-solaris-threads
 unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
 unbound_optimise: false  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
 unbound_optimise_memory: 100  # percentage

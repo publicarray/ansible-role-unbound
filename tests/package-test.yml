@@ -1,0 +1,58 @@
+---
+- hosts: all
+  vars:
+    - unbound_compile: false
+    - unbound_optimise: true
+    - unbound:
+        server:
+          verbosity: 4
+          use_syslog: no
+          log_time_ascii: yes
+          logfile: "unbound.log"
+          auto_trust_anchor_file: "root.key"
+          root_hints: "root.hints"
+          directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+          chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+          pidfile: "unbound.pid"
+          username: "{{_unbound.user}}"
+          access_control: 0.0.0.0/0 allow
+          interface: [0.0.0.0, 0.0.0.0@853, '::0@853']
+          ssl_service_key: "private.key"
+          ssl_service_pem: "certificate.pem"
+          ssl_port: 853
+          # incoming_num_tcp: 100
+          # udp_upstream_without_downstream: yes
+          # qname_minimisation: yes
+          hide_identity: yes
+          hide_version: yes
+          # hide_trustanchor: yes
+          # so_reuseport: yes
+          rrset_roundrobin: yes
+          prefetch: yes
+          prefetch_key: yes
+          do_not_query_localhost: yes
+          use_caps_for_id: yes
+        remote_control:
+          control_enable: true
+          # fix no ipv6 -> https://github.com/boot2docker/boot2docker/issues/1257
+          # test with: `sysctl -a | grep disable_ipv6`
+          control_interface: 127.0.0.1
+  pre_tasks:
+    - name: Update apt cache - Debian
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+    - name: Install dig - Debian
+      package: name=dnsutils state=present
+      when: ansible_os_family == 'Debian'
+
+    - name: Install dig - RedHat
+      package: name=bind-utils state=present
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install dig - FreeBSD
+      package: name=bind-tools state=present
+      when: ansible_os_family == 'FreeBSD'
+  roles:
+    - role_under_test

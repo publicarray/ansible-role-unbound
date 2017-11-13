@@ -114,12 +114,12 @@
     dest: /etc/systemd/system/unbound.service
   when: ansible_service_mgr == 'systemd'
 
-- name: Copy contrib/unbound.socket - systemd
-  copy:
-    remote_src: true
-    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.socket
-    dest: /etc/init.d/unbound.init
-  when: ansible_service_mgr == 'systemd'
+# - name: Copy contrib/unbound.socket - systemd
+#   copy:
+#     remote_src: true
+#     src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.socket
+#     dest: /etc/systemd/system/unbound.socket
+#   when: ansible_service_mgr == 'systemd'
 
 - name: Reload systemd daemon to pick up config changes
   systemd:
