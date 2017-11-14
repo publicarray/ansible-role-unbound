@@ -43,6 +43,7 @@ Role Variables
 --------------
 
 Here is a list of the default variables for this role. They are also available in `defaults/main.yml`.
+I recommend that you copy and paste the variables below to your `group_vars/all/configs` file and that you look at unbound's documentation: https://unbound.net/documentation/unbound.conf.html
 
 ```yml
 ---
