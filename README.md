@@ -1,7 +1,7 @@
 Ansible-Role-Unbound
 =========
 
-[![Build Status](https://travis-ci.com/publicarray/ansible-role-unbound.svg?token=DAqXkb6oM7gEUhTmp8BA&branch=master)](https://travis-ci.com/publicarray/ansible-role-unbound)
+[![Build Status](https://travis-ci.org/publicarray/ansible-role-unbound.svg?branch=master)](https://travis-ci.org/publicarray/ansible-role-unbound)
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-publicarray.unbound-blue.svg?style=flat)](https://galaxy.ansible.com/publicarray/unbound/)
 
 Highly-configurable Ansible role for Unbound DNS resolver
