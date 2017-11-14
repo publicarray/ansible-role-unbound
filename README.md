@@ -13,7 +13,7 @@ Contents
 --------
 
  1. [Installation](#installation)
- 1. [Examples / common use-cases](#Examples-common-use-cases)
+ 1. [Examples / common use-cases](#examples--common-use-cases)
  1. [Requirements](#requirements)
  1. [Role Variables](#role-variables)
  1. [Dependencies](#dependencies)
@@ -122,7 +122,7 @@ $ ansible-playbook -i dns.example.com, playbook.yml
 [License](LICENCE)
 -------
 
-[MIT](https://opensource.org/licenses/MIT)/[BSD](https://opensource.org/licenses/BSD-2-Clause
+[MIT](https://opensource.org/licenses/MIT)/[BSD](https://opensource.org/licenses/BSD-2-Clause)
 
 Testing
 -------
