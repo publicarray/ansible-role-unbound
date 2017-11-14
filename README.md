@@ -119,7 +119,7 @@ Example Playbook
 $ ansible-playbook -i dns.example.com, playbook.yml
 ```
 
-[License](LICENCE)
+[License](LICENSE)
 -------
 
 [MIT](https://opensource.org/licenses/MIT)/[BSD](https://opensource.org/licenses/BSD-2-Clause)
