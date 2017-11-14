@@ -2,8 +2,7 @@
 unbound_compile: false
 unbound_compile_version: 1.6.7  # https://unbound.net/download.html
 unbound_compile_sha256: 4e7bd43d827004c6d51bef73adf941798e4588bdb40de5e79d89034d69751c9f
-# solaris: --with-solaris-threads
-unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
+unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"  # solaris: --with-solaris-threads
 unbound_optimise: false  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
 unbound_optimise_memory: 100  # percentage
 unbound_tls_domain: example.com  # common name for cert signing request
@@ -18,7 +17,7 @@ unbound:  # https://unbound.net/documentation/unbound.conf.html
     logfile: "unbound.log"
     auto_trust_anchor_file: "root.key"
     root_hints: "root.hints"  #  Please update root.hints every six months or so
-    pidfile: "unbound.pid"
+    pidfile: "/var/run/unbound.pid"
     username: "{{_unbound.user}}"
     # if not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"

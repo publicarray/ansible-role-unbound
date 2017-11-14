@@ -7,11 +7,13 @@ WantedBy=multi-user.target
 
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=@UNBOUND_SBIN_DIR@/unbound
-#ExecStartPre=/usr/sbin/unbound-checkconf
+{# -d = do-daemonize: no, Type=notify #}
+ExecStart=@UNBOUND_SBIN_DIR@/unbound -d
+#ExecStartPre=@UNBOUND_SBIN_DIR@/unbound-checkconf @UNBOUND_RUN_DIR@/unbound.conf
+ExecReload=@UNBOUND_SBIN_DIR@/unbound-control reload
 NotifyAccess=main
-{# Fix: Unable to keep service alive -> inactive (dead) (code=exited, status=0/SUCCESS) [Type=notify] #}
-Type=forking
+{# do-daemonize: yes/no, Type=forking/notify #}
+Type=notify
 CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_SYS_CHROOT
 MemoryDenyWriteExecute=true
 NoNewPrivileges=true
@@ -21,8 +23,9 @@ ProtectHome=true
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=true
-ProtectSystem=strict
 {% if ansible_distribution != 'Debian' and ansible_distribution_release != 'stretch' %}
+{# Fix: Unbound crash debian9-stretch #}
+ProtectSystem=strict
 {# Fix: Unable to start service unbound on debian9-stretch -> (code=exited, status=226/NAMESPACE) #}
 ReadWritePaths=@UNBOUND_SYSCONF_DIR@ @UNBOUND_LOCALSTATE_DIR@ /run @UNBOUND_RUN_DIR@
 {% endif %}

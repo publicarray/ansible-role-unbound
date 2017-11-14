@@ -13,7 +13,7 @@
           root_hints: "root.hints"
           directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
           chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
-          pidfile: "unbound.pid"
+          pidfile: "/var/run/unbound.pid"
           username: "{{_unbound.user}}"
           access_control: 0.0.0.0/0 allow
           interface: [0.0.0.0, 0.0.0.0@853, '::0@853']

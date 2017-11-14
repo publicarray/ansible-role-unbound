@@ -52,6 +52,12 @@
     url: https://www.internic.net/domain/named.root
     dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
 
+# https://www.iana.org/dnssec/files
+# - name: Get ICANN certificates for S/MIME signature (inbuild cert is valid until 2029)
+#   get_url:
+#     url: https://data.iana.org/root-anchors/icannbundle.pem
+#     dest: "{{unbound.server.directory}}/icannbundle.pem"
+
 ###
 # fix: ldns error while converting string to RR: Syntax error, could not parse the RR's TTL
 #     failed to load trust anchor from /etc/unbound/root.key at line x, skipping
@@ -82,6 +88,7 @@
 ### endfix
 
 - name: Setup or update of the root trust anchor for DNSSEC validation
+  # command: "unbound-anchor -a {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}} -c {{unbound.server.directory}}/icannbundle.pem"
   command: unbound-anchor -a "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: unbound_anchor_result
   changed_when: "unbound_anchor_result.rc == 1"
