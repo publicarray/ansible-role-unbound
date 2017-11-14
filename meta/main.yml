@@ -5,18 +5,15 @@ galaxy_info:
   author: publicarray
   description: Unbound - Validating, recursive, and caching DNS resolver
   company: ""
-  license: "license (BSD)"
+  license: "license (MIT, BSD)"
   min_ansible_version: 2.2
   platforms:
     - name: Debian
       versions:
-        - 9
+        - stretch
     - name: Ubuntu
       versions:
         - xenial
-    - name: Centos
-      versions:
-        - 7
     - name: freeBSD
       versions:
         - all
@@ -26,4 +23,3 @@ galaxy_info:
     - dnssec
     - dnscrypt
     - dnsovertls
-    - dns-over-tls

@@ -1,0 +1,18 @@
+---
+- hosts: all
+  roles:
+    - role_under_test
+  vars:
+    - unbound:
+        server:
+          verbosity: 1
+          interface: 127.0.0.1 # fix no ipv6 in docker
+          logfile: "unbound.log"
+          auto_trust_anchor_file: "root.key"
+          root_hints: "root.hints"
+          pidfile: "/var/run/unbound.pid"
+          username: "{{_unbound.user}}"
+          directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+          chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
+        remote_control:
+          control_enable: false

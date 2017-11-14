@@ -1,13 +1,29 @@
 ---
+# Whether or not to compile unbound from source
 unbound_compile: false
-unbound_compile_version: 1.6.7  # https://unbound.net/download.html
+# The unbound version to download the source from <https://unbound.net/download.html>
+unbound_compile_version: 1.6.7
+# Checksum to compare the download the file against <https://unbound.net/download.html>
 unbound_compile_sha256: 4e7bd43d827004c6d51bef73adf941798e4588bdb40de5e79d89034d69751c9f
-unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"  # solaris: --with-solaris-threads
-unbound_optimise: false  # http://unbound.nlnetlabs.nl/documentation/howto_optimise.html
-unbound_optimise_memory: 100  # percentage
-unbound_tls_domain: example.com  # common name for cert signing request
-unbound_tls_cert_provider: selfsigned  # must be one of: selfsigned,assertonly,acme. no other provider than selfsigned implemented just yet
-unbound:  # https://unbound.net/documentation/unbound.conf.html
+# The arguments given to the `./configure` command. <!--Solaris users should use --with-solaris-threads -->
+unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
+
+# Whether to use the optimisation guidelines from <http://unbound.nlnetlabs.nl/documentation/howto_optimise.html>
+unbound_optimise: false
+# Percentage of physical memory to use for unbound. Only used when `unbound_optimise` is true
+unbound_optimise_memory: 100
+
+## DNS-over-TLS settings
+# see <https://github.com/publicarray/ansible-role-unbound/wiki/Examples#dns-over-tls> for an example
+# common name for cert signing request
+unbound_tls_domain: example.com
+# must be one of: selfsigned,assertonly,acme. no other provider than selfsigned implemented just yet
+unbound_tls_cert_provider: selfsigned
+
+## Main unbound configuration
+# See <https://unbound.net/documentation/unbound.conf.html> for more options and detailed descriptions
+# Note: In Ansible the variables must use underscores (_) not dashes (-) as separators
+unbound:
   server:
     verbosity: 1
     # interface: [127.0.0.1, "::1"]
@@ -16,11 +32,18 @@ unbound:  # https://unbound.net/documentation/unbound.conf.html
     # log_time_ascii: yes
     logfile: "unbound.log"
     auto_trust_anchor_file: "root.key"
-    root_hints: "root.hints"  #  Please update root.hints every six months or so
+    # Please update root.hints every six months or so. For example:
+    # wget -O /usr/local/etc/unbound/root.hints https://www.internic.net/domain/named.cache
+    root_hints: "root.hints"
     pidfile: "/var/run/unbound.pid"
     username: "{{_unbound.user}}"
     # if not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
     chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
-  remote_control:
+    ## DNS-over-TLS
+    # interface: [0.0.0.0@853, '::0@853']
+    # ssl_service_key: "private.key"
+    # ssl_service_pem: "certificate.pem"
+    # ssl_port: 853
+  remote_control: # unbound-control
     control_enable: false
