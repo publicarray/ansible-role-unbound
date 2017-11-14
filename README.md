@@ -135,13 +135,11 @@ Requires python 2.7 and docker
 virtualenv --no-setuptools venv
 source venv/bin/activate or source venv/bin/activate.fish
 pip install docker-py molecule
-molecule test
+molecule test # --debug - for verbose output
 deactivate
 ```
 
 ### with [geerlingguy's script](https://gist.githubusercontent.com/geerlingguy/73ef1e5ee45d8694570f334be385e181)
-
-To run the test playbook(s) in this directory:
 
   1. Install and start Docker.
   1. Download the test shim into `tests/test.sh`:
