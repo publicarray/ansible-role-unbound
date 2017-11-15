@@ -29,6 +29,7 @@
     executable: bash
   register: unbound_version
   changed_when: false
+  check_mode: false
 
 - name: Display unbound version
   debug:
@@ -44,6 +45,7 @@
     path: "{{unbound.server.directory}}"
     owner: "{{unbound.server.username}}"
     group: "{{unbound.server.username}}"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 # https://www.internic.net/domain/named.cache
 # Please update root.hints every six months or so
@@ -111,6 +113,7 @@
   command: "unbound-checkconf {{unbound.server.directory}}/unbound.conf"
   changed_when: false
   check_mode: no
+  ignore_errors: "{{ ansible_check_mode }}"
 
 # SELinux
 - name: Configure ports for SELinux (install policycoreutils-python)

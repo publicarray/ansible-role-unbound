@@ -35,16 +35,19 @@
     - pyopenssl
   tags:
     - skip_ansible_lint
+  when: not ansible_check_mode
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   openssl_privatekey:
     path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+  when: not ansible_check_mode
 
 - name: Generate an OpenSSL Certificate Signing Request
   openssl_csr:
     path: "{{unbound.server.directory}}/request.csr"
     privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
     common_name: "{{unbound_tls_domain}}"
+  when: not ansible_check_mode
 
 - name: Generate a Self Signed OpenSSL certificate
   openssl_certificate:
@@ -52,6 +55,7 @@
     privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
     csr_path: "{{unbound.server.directory}}/request.csr"
     provider: "{{unbound_tls_cert_provider}}"
+  when: not ansible_check_mode
 
 - name: Get Fingerprint
   shell: openssl req -pubkey < *.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
@@ -69,6 +73,7 @@
         tls_pubkey_pinset:
           digest: "sha256"
           value: "{{unbound_fingerprint.stdout}}"
+  when: not ansible_check_mode
 
 # - name: Install certbot
 #   get_url:
