@@ -14,7 +14,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - xenial
-    - name: freeBSD
+    - name: FreeBSD
       versions:
         - all
   galaxy_tags:
