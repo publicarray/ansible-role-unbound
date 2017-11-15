@@ -69,6 +69,7 @@
   stat:
     path: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: auto_trust_anchor_file
+  check_mode: no
 
 - name: Install awk (used for shell scripts/commands)
   package:
@@ -81,6 +82,7 @@
   register: is_bind_format
   changed_when: false
   when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True
+  check_mode: no
 
 - name: Remove old bind formatted root.key for DNSSEC in RedHat systems
   file:
