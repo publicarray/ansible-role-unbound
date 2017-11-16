@@ -5,6 +5,7 @@
   roles:
     - role: ansible-role-unbound
   vars:
+    - opennic_tlds: [free, geek, oss]
     - unbound_compile: true
     - unbound_optimise: true
     - unbound:
@@ -41,3 +42,15 @@
           # fix no ipv6 -> https://github.com/boot2docker/boot2docker/issues/1257
           # test with: `sysctl -a | grep disable_ipv6`
           control_interface: 127.0.0.1
+        stub-zone:
+          - name: "dns1.opennic.glue"
+            stub-addr: "127.0.0.1@56"
+          - name: "free"
+            stub-addr: "127.0.0.1@56"
+          - name: "geek"
+            stub-addr: "127.0.0.1@56"
+          - name: "oss"
+            stub-addr: "127.0.0.1@56"
+        forward-zone:
+          name: "com"
+          forward-addr: [8.8.4.4, 8.8.8.8]  # Google

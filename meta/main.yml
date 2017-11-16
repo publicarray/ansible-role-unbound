@@ -16,7 +16,8 @@ galaxy_info:
         - xenial
     - name: FreeBSD
       versions:
-        - all
+        - 11.0
+        - 11.1
   galaxy_tags:
     - unbound
     - dns
