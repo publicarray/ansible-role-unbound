@@ -144,6 +144,7 @@
   file:
     path: "{{unbound.server.directory}}/dev/"
     state: directory
+  when: ansible_os_family == 'FreeBSD'
 
 - name: Mount devfs to chroot
   mount:
