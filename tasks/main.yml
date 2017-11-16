@@ -140,13 +140,12 @@
     state: present
   when:  ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
 
-- name: Create /dev folder to chroot - FreeBSD
+- name: Create /dev folder to chroot
   file:
     path: "{{unbound.server.directory}}/dev/"
     state: directory
-  when: ansible_os_family == 'FreeBSD'
 
-- name: Mount devfs to chroot
+- name: Mount devfs to chroot - FreeBSD
   mount:
     path: "{{unbound.server.directory}}/dev"
     src: /dev
