@@ -32,6 +32,7 @@
     state: latest
   with_items:
     - setuptools
+    - pip
     - pyopenssl
   tags:
     - skip_ansible_lint
