@@ -29,7 +29,7 @@
     state: directory
   when: ansible_os_family != 'FreeBSD'
 
-- name: Create {{unbound.server.directory}} directory if it doesn't exist
+- name: Create unbound directory if it doesn't exist
   file:
     path: "{{unbound.server.directory}}"
     state: directory
@@ -42,11 +42,20 @@
     checksum: "sha256:{{ unbound_compile_sha256 }}"
   when: ansible_os_family != 'FreeBSD'
 
+# - name: Extract source 'tar -xzf'
+#   unarchive:
+#     src: "/var/src/unbound-{{unbound_compile_version}}.tar.gz"
+#     dest: /var/src/
+#     creates: /var/src/unbound-{{unbound_compile_version}}
+#   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
+
+# fix: "Could not find or access '/var/src/unbound-1.6.7.tar.gz'"
+# https://github.com/ansible/ansible/issues/30821
 - name: Extract source 'tar -xzf'
-  unarchive:
-    src: "/var/src/unbound-{{unbound_compile_version}}.tar.gz"
-    dest: /var/src/
-    creates: /var/src/unbound-{{unbound_compile_version}}/README
+  command: "tar -xzf /var/src/unbound-{{unbound_compile_version}}.tar.gz"
+  args:
+    chdir: /var/src/
+    creates: /var/src/unbound-{{unbound_compile_version}}
   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
 
 # Fix: Unable to start service unbound-> (code=exited, status=226/NAMESPACE)
