@@ -2,5 +2,6 @@
 _unbound:
   pip:
   user: _unbound
-  conf_dir: /var/unbound/etc
+  conf_dir: /usr/local/etc/unbound
+  pidfile: /usr/local/etc/unbound/unbound.pid
   dependencies:

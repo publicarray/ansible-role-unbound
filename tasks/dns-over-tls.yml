@@ -19,6 +19,7 @@
   with_items:
     - libffi-dev
     - python-dev
+    # - python-openssl
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
 
 - name: Install pip

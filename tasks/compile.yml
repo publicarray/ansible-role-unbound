@@ -107,21 +107,13 @@
     createhome: no
   when: ansible_os_family != 'FreeBSD'
 
-- name: Copy unbound.init - Debian
-  copy:
-    remote_src: true
-    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.init
+- name: Copy contrib/unbound.init
+  template:
+    src: unbound.init
     dest: /etc/init.d/unbound
     mode: 0751
-  when: ansible_service_mgr == 'service' and ansible_os_family == 'Debian' and not ansible_check_mode
-
-# - name: Copy unbound.init - Fedora
-#   copy:
-#     remote_src: true
-#     src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.init_fedora
-#     dest: /etc/init.d/unbound
-#     mode: 751
-#   when: ansible_service_mgr == 'service' and ansible_os_family == 'RedHat'
+  when: ansible_service_mgr == 'service' and not ansible_check_mode
+  # when: ansible_service_mgr == 'service' and ansible_os_family == 'Debian' and not ansible_check_mode
 
 - name: Copy contrib/unbound.service - systemd
   copy:

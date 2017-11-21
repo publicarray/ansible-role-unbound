@@ -35,7 +35,7 @@ unbound:
     # Please update root.hints every six months or so. For example:
     # wget -O /usr/local/etc/unbound/root.hints https://www.internic.net/domain/named.cache
     root_hints: "root.hints"
-    pidfile: "/var/run/unbound.pid"
+    pidfile: "{{_unbound.pidfile}}"
     username: "{{_unbound.user}}"
     # if not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"

@@ -1,6 +1,9 @@
 [Unit]
 Description=Validating, recursive, and caching DNS resolver
 Documentation=man:unbound(8)
+After=network.target
+Before=nss-lookup.target
+Wants=nss-lookup.target
 
 [Install]
 WantedBy=multi-user.target
@@ -8,7 +11,7 @@ WantedBy=multi-user.target
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
 {# -d = do-daemonize: no, Type=notify #}
-ExecStart=@UNBOUND_SBIN_DIR@/unbound -d
+ExecStart=@UNBOUND_SBIN_DIR@/unbound -d $DAEMON_OPTS
 #ExecStartPre=@UNBOUND_SBIN_DIR@/unbound-checkconf @UNBOUND_RUN_DIR@/unbound.conf
 ExecReload=@UNBOUND_SBIN_DIR@/unbound-control reload
 NotifyAccess=main

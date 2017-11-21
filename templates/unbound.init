@@ -1,0 +1,127 @@
+#!/bin/sh
+
+# source: https://gist.github.com/lifeofguenter/6faa8100aeffeb7541dd
+
+### BEGIN INIT INFO
+# Provides:          unbound
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+NAME=unbound
+DESC="recursive DNS server"
+DAEMON=/usr/local/sbin/unbound
+PIDFILE="{{unbound.server.pidfile}}"
+
+test -x $DAEMON || exit 0
+test -x ${DAEMON}-checkconf || exit 0
+
+{% if ansible_os_family == 'Debian' %}
+. /lib/lsb/init-functions
+{% else %}
+. /etc/rc.d/init.d/functions
+{% endif %}
+
+UNBOUND_ENABLE=true
+UNBOUND_CONF={{unbound.server.directory}}unbound.conf
+UNBOUND_BASE_DIR=$(dirname $UNBOUND_CONF)
+CHROOT_DIR=$(awk '{if ($1 ~ "^chroot" && $2 != "\"\"") print $2}' $UNBOUND_CONF|sed -e "s#\"##g")
+ROOT_TRUST_ANCHOR_UPDATE=false
+ROOT_TRUST_ANCHOR_FILE={{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}
+
+if [ -f /etc/default/$NAME ]; then
+    . /etc/default/$NAME
+    case "x$UNBOUND_ENABLE" in
+        xtrue|x1|xyes)
+            UNBOUND_ENABLE=true
+            ;;
+        *)
+            UNBOUND_ENABLE=false
+            ;;
+    esac
+    case "x$ROOT_TRUST_ANCHOR_UPDATE" in
+        xtrue|x1|xyes)
+            ROOT_TRUST_ANCHOR_UPDATE=true
+            ;;
+        *)
+            ROOT_TRUST_ANCHOR_UPDATE=false
+            ;;
+    esac
+fi
+
+do_chroot_setup() {
+    if [ -d "$CHROOT_DIR" -a "$CHROOT_DIR" != "$UNBOUND_BASE_DIR" ]; then
+        cd /
+        tar --overwrite -cf - $(echo $UNBOUND_BASE_DIR | sed 's#^/##') | (cd $CHROOT_DIR && tar -xf -)
+    fi
+}
+
+case "$1" in
+    start)
+        if $UNBOUND_ENABLE; then
+            do_chroot_setup
+            if $ROOT_TRUST_ANCHOR_UPDATE; then
+                unbound-anchor -a $ROOT_TRUST_ANCHOR_FILE -v 2>&1 | logger -p daemon.info -t unbound-anchor
+                chown unbound:unbound $ROOT_TRUST_ANCHOR_FILE
+            fi
+            log_daemon_msg "Starting $DESC" "$NAME"
+            if start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --name $NAME --startas $DAEMON -- $DAEMON_OPTS; then
+                log_end_msg 0
+            else
+                log_end_msg 1
+            fi
+        else
+            log_warning_msg "Not starting $DESC $NAME, disabled via /etc/default/$NAME"
+        fi
+        ;;
+
+    stop)
+        if $UNBOUND_ENABLE; then
+            log_daemon_msg "Stopping $DESC" "$NAME"
+            if start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --name $NAME; then
+                log_end_msg 0
+            else
+                log_end_msg 1
+            fi
+        fi
+        ;;
+
+    restart|force-reload)
+        if $UNBOUND_ENABLE; then
+            log_daemon_msg "Restarting $DESC" "$NAME"
+            start-stop-daemon --stop --quiet --pidfile $PIDFILE --name $NAME --retry 5
+            if start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --name $NAME --startas $DAEMON -- $DAEMON_OPTS; then
+                do_chroot_setup
+                log_end_msg 0
+            else
+                log_end_msg 1
+            fi
+        fi
+        ;;
+
+    reload)
+        if $UNBOUND_ENABLE; then
+            log_daemon_msg "Reloading $DESC" "$NAME"
+            if start-stop-daemon --stop --pidfile $PIDFILE --signal 1; then
+                do_chroot_setup
+                log_end_msg 0
+            else
+                log_end_msg 1
+            fi
+        fi
+        ;;
+
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|status|reload|force-reload}"
+        exit 1
+        ;;
+esac
+
+exit 0;

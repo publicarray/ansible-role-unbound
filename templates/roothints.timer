@@ -1,0 +1,10 @@
+# source: https://wiki.archlinux.org/index.php/Unbound#Roothints_systemd_timer
+[Unit]
+Description=Run root.hints monthly
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

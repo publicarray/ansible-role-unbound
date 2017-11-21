@@ -3,6 +3,7 @@ _unbound:
   pip: python2-pip
   user: unbound
   conf_dir: /etc/unbound
+  pidfile: /var/run/unbound.pid
   dependencies:
     - ldns-devel
     - libevent-devel

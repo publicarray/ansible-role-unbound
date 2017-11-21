@@ -1,0 +1,8 @@
+# source: https://wiki.archlinux.org/index.php/Unbound#Roothints_systemd_timer
+
+[Unit]
+Description=Update root hints for unbound
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/wget -O {{unbound.server.directory}}/{{unbound.server.root_hints}} https://www.internic.net/domain/named.cache

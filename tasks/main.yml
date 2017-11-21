@@ -13,6 +13,11 @@
     name: bash
     state: present
 
+- name: Install wget (used for roothints updating)
+  package:
+    name: wget
+    state: present
+
 - name: Install unbound from package
   package:
     name: unbound
@@ -138,12 +143,13 @@
     proto: tcp
     setype: dns_port_t
     state: present
-  when:  ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
+  when: ansible_selinux.status is defined and ansible_selinux.status != "Missing selinux Python library"
 
 - name: Create /dev folder to chroot
   file:
     path: "{{unbound.server.directory}}/dev/"
     state: directory
+  when: unbound.server.chroot is defined and unbound.server.chroot != ""
 
 - name: Mount devfs to chroot - FreeBSD
   mount:
@@ -152,7 +158,7 @@
     fstype: devfs
     opts: ro
     state: mounted
-  when: ansible_os_family == 'FreeBSD'  # TODO work with jails
+  when: ansible_os_family == 'FreeBSD' and unbound.server.chroot is defined and unbound.server.chroot != "" # TODO work with jails
 
 - name: Mount devtmpfs to chroot - Debian and RedHat
   mount:
@@ -161,7 +167,19 @@
     fstype: devtmpfs
     opts: ro
     state: mounted
-  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+  when: (ansible_os_family == 'Debian' or ansible_os_family == 'RedHat') and unbound.server.chroot is defined and unbound.server.chroot != ""
+
+- name: Install roothints.service - systemd
+  template:
+    src: roothints.service
+    dest: /etc/systemd/system/roothints.service
+  when: ansible_service_mgr == 'systemd' and not ansible_check_mode
+
+- name: Install roothints.timer - systemd
+  template:
+    src: roothints.timer
+    dest: /etc/systemd/system/roothints.timer
+  when: ansible_service_mgr == 'systemd' and not ansible_check_mode
 
 - name: Ensure unbound is running
   service:
