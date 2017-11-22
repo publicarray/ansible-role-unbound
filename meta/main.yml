@@ -14,6 +14,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - xenial
+        - trusty
     - name: FreeBSD
       versions:
         - 11.0

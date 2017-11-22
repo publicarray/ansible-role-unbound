@@ -51,8 +51,7 @@ CHALLENGETYPE="dns-01"
 #DOMAINS_TXT="${BASEDIR}/domains.txt"
 
 # Output directory for generated certificates
-#CERTDIR="${BASEDIR}/certs"
-#CERTDIR=/usr/local/etc/dehydrated
+#CERTDIR="${BASEDIR}/certs"  # /usr/local/etc/dehydrated
 
 # Directory for account keys and registration information
 #ACCOUNTDIR="${BASEDIR}/accounts"

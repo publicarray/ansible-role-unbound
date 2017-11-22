@@ -15,8 +15,8 @@ env:
     - distro=debian8 playbook=compile-test.yml
 matrix:
   allow_failures:
-    - env: distro=ubuntu1404 playbook=package-test.yml
-    - env: distro=ubuntu1404 playbook=compile-test.yml
+    # - env: distro=ubuntu1404 playbook=package-test.yml
+    # - env: distro=ubuntu1404 playbook=compile-test.yml
     - env: distro=debian8 playbook=package-test.yml
     - env: distro=debian8 playbook=compile-test.yml
 
