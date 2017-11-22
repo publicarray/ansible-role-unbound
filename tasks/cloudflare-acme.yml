@@ -1,0 +1,93 @@
+---
+- name: Create /usr/local/src directory if it doesn't exist
+  file:
+    path: /usr/local/src/
+    state: directory
+
+- name: Install openssl git gcc pip python-dev libffi libssl/openssl-devel
+  package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - openssl
+    - git
+    - gcc
+    - "{{_unbound.pip}}"
+    - "{{_unbound.python_dev}}"
+    - "{{_unbound.libffi_dev}}"
+    - "{{_unbound.openssl_dev}}"
+# when: ansible_os_family == 'Ubuntu' and ansible_os_family == 'RedHat'
+
+- name: Upgrade pip
+  pip:
+    name: pip
+    state: latest
+  tags:
+    - skip_ansible_lint
+  when: not ansible_check_mode
+
+- name: Get dehydrated a letsencrypt/acme shell-script
+  git:
+    repo: https://github.com/lukas2511/dehydrated.git
+    dest: /usr/local/src/dehydrated
+
+- name: Create /usr/local/src/dehydrated/hooks directory if it doesn't exist
+  file:
+    path: /usr/local/src/dehydrated/hooks
+    state: directory
+
+- name: Get letsencrypt cloudflare hook
+  git:
+    repo: https://github.com/kappataumu/letsencrypt-cloudflare-hook
+    dest: /usr/local/src/dehydrated/hooks/cloudflare
+
+- name: Get pip requirements - python3
+  pip:
+    requirements: /usr/local/src/dehydrated/hooks/cloudflare/requirements.txt
+  when: ansible_python.version.major == 3
+
+- name: Get pip requirements - python2
+  pip:
+    requirements: /usr/local/src/dehydrated/hooks/cloudflare/requirements-python-2.txt
+  when: ansible_python.version.major == 2
+
+- name: Create /usr/local/etc/dehydrated directory if it doesn't exist
+  file:
+    path: /usr/local/etc/dehydrated
+    state: directory
+
+- name: Copy dehydrated configuration
+  template:
+    src: config
+    dest: /usr/local/etc/dehydrated/config
+
+- name: Copy dehydrated domains.txt
+  template:
+    src: domains.txt
+    dest: /usr/local/etc/dehydrated/domains.txt
+
+- name: Create certificate with ./dehydrated
+  command: /usr/local/src/dehydrated/dehydrated -c --accept-terms
+  args:
+    creates: /usr/local/etc/dehydrated/certs/{{unbound_tls_domain}}/fullchain.pem
+
+- name: Symlink privkey.pem
+  file:
+    src: "/usr/local/etc/dehydrated/certs/{{unbound_tls_domain}}/privkey.pem"
+    dest: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+    state: link
+    # mode: 0600
+
+- name: Copy fullchain.pem
+  file:
+    src: "/usr/local/etc/dehydrated/certs/{{unbound_tls_domain}}/fullchain.pem"
+    dest: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
+    state: link
+    # mode: 0600
+
+# /usr/local/etc/dehydrated/certs/my.domain.com
+# cert.csr -- cert request
+# cert.pem -- cert
+# chain.pem -- letsencrypt cert
+# fullchain.pem -- letsencrypt cert + my domain cert
+# privkey.pem -- privatekey

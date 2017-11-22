@@ -1,3 +1,4 @@
+{{ ansible_managed | comment }}
 # source: https://wiki.archlinux.org/index.php/Unbound#Roothints_systemd_timer
 
 [Unit]

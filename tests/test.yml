@@ -6,7 +6,7 @@
     - unbound:
         server:
           verbosity: 1
-          interface: 127.0.0.1 # fix no ipv6 in docker
+          interface: 127.0.0.1  # fix no ipv6 in docker
           logfile: "unbound.log"
           auto_trust_anchor_file: "root.key"
           root_hints: "root.hints"

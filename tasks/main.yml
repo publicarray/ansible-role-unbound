@@ -42,7 +42,11 @@
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
-  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined
+  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined and unbound_tls_cert_provider != "acme-cf"
+
+- name: Prepare dns-over-tls with acme and cloudflare
+  import_tasks: cloudflare-acme.yml
+  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined and unbound_tls_cert_provider == "acme-cf"
 
 # fix: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=763901
 - name: Set unbound folder permissions
@@ -158,7 +162,7 @@
     fstype: devfs
     opts: ro
     state: mounted
-  when: ansible_os_family == 'FreeBSD' and unbound.server.chroot is defined and unbound.server.chroot != "" # TODO work with jails
+  when: ansible_os_family == 'FreeBSD' and unbound.server.chroot is defined and unbound.server.chroot != ""  # TODO work with jails
 
 - name: Mount devtmpfs to chroot - Debian and RedHat
   mount:

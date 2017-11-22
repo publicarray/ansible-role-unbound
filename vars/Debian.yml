@@ -1,6 +1,9 @@
 ---
 _unbound:
   pip: python-pip
+  python_dev: python-dev
+  libffi_dev: libffi-dev
+  openssl_dev: libssl-dev
   user: unbound
   conf_dir: /etc/unbound
   pidfile: /var/run/unbound.pid

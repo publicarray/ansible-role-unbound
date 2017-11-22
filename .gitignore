@@ -3,3 +3,4 @@
 .molecule
 venv
 tests/test.sh
+defaults/secret.yml

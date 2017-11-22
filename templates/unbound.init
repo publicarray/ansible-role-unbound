@@ -1,5 +1,6 @@
 #!/bin/sh
 
+{{ ansible_managed | comment }}
 # source: https://gist.github.com/lifeofguenter/6faa8100aeffeb7541dd
 
 ### BEGIN INIT INFO

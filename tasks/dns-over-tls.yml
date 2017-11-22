@@ -6,10 +6,8 @@
 
 - name: Install libssl-dev - Debian
   package:
-    name: "{{item}}"
+    name: "{{_unbound.openssl_dev}}"
     state: present
-  with_items:
-    - libssl-dev
   when: ansible_os_family == 'Debian'
 
 - name: Install python-dev and libffi-dev - Ubuntu trusty
@@ -17,9 +15,9 @@
     name: "{{item}}"
     state: present
   with_items:
-    - libffi-dev
-    - python-dev
-    # - python-openssl
+    - "{{_unbound.libffi_dev}}"
+    - "{{_unbound.python_dev}}"
+    # - python-openssl || pyOpenSSL
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
 
 - name: Install pip

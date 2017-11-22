@@ -23,9 +23,9 @@
     state: present
   when: ansible_os_family == 'FreeBSD'
 
-- name: Create /var/src directory if it doesn't exist
+- name: Create /usr/local/src directory if it doesn't exist
   file:
-    path: /var/src/
+    path: /usr/local/src/
     state: directory
   when: ansible_os_family != 'FreeBSD'
 
@@ -38,50 +38,50 @@
 - name: Get unbound source
   get_url:
     url: "https://unbound.nlnetlabs.nl/downloads/unbound-{{unbound_compile_version}}.tar.gz"
-    dest: /var/src/unbound-{{unbound_compile_version}}.tar.gz
+    dest: /usr/local/src/unbound-{{unbound_compile_version}}.tar.gz
     checksum: "sha256:{{ unbound_compile_sha256 }}"
   when: ansible_os_family != 'FreeBSD'
 
 # - name: Extract source 'tar -xzf'
 #   unarchive:
-#     src: "/var/src/unbound-{{unbound_compile_version}}.tar.gz"
-#     dest: /var/src/
-#     creates: /var/src/unbound-{{unbound_compile_version}}
+#     src: "/usr/local/src/unbound-{{unbound_compile_version}}.tar.gz"
+#     dest: /usr/local/src/
+#     creates: /usr/local/src/unbound-{{unbound_compile_version}}
 #   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
 
-# fix: "Could not find or access '/var/src/unbound-1.6.7.tar.gz'"
+# fix: "Could not find or access '/usr/local/src/unbound-1.6.7.tar.gz'"
 # https://github.com/ansible/ansible/issues/30821
 - name: Extract source 'tar -xzf'
-  command: "tar -xzf /var/src/unbound-{{unbound_compile_version}}.tar.gz"
+  command: "tar -xzf /usr/local/src/unbound-{{unbound_compile_version}}.tar.gz"
   args:
-    chdir: /var/src/
-    creates: /var/src/unbound-{{unbound_compile_version}}
+    chdir: /usr/local/src/
+    creates: /usr/local/src/unbound-{{unbound_compile_version}}
   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
 
 # Fix: Unable to start service unbound-> (code=exited, status=226/NAMESPACE)
 - name: Update contrib/unbound.service
   template:
     src: unbound.service.in
-    dest: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.service.in
+    dest: /usr/local/src/unbound-{{unbound_compile_version}}/contrib/unbound.service.in
   when: ansible_service_mgr == 'systemd' and not ansible_check_mode
 
 - name: ./configure unbound
   command: "./configure {{unbound_compile_config}}"
   args:
-    chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    chdir: "/usr/local/src/unbound-{{unbound_compile_version}}"
     creates: Makefile
   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
 
 - name: Make unbound
   make:
-    chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    chdir: "/usr/local/src/unbound-{{unbound_compile_version}}"
     params:
       NUM_THREADS: "{{ansible_processor_cores|default(1) * ansible_processor_count|default(1)}}"
   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
 
 - name: Make install unbound
   make:
-    chdir: "/var/src/unbound-{{unbound_compile_version}}"
+    chdir: "/usr/local/src/unbound-{{unbound_compile_version}}"
     target: install
   become: yes
   register: result
@@ -118,14 +118,14 @@
 - name: Copy contrib/unbound.service - systemd
   copy:
     remote_src: true
-    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.service
+    src: /usr/local/src/unbound-{{unbound_compile_version}}/contrib/unbound.service
     dest: /etc/systemd/system/unbound.service
   when: ansible_service_mgr == 'systemd' and not ansible_check_mode
 
 - name: Copy contrib/unbound.socket - systemd
   copy:
     remote_src: true
-    src: /var/src/unbound-{{unbound_compile_version}}/contrib/unbound.socket
+    src: /usr/local/src/unbound-{{unbound_compile_version}}/contrib/unbound.socket
     dest: /etc/systemd/system/unbound.socket
   when: ansible_service_mgr == 'systemd' and not ansible_check_mode
 
