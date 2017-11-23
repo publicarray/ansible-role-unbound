@@ -119,6 +119,7 @@
     src: unbound.conf
     dest: "{{unbound.server.directory}}/unbound.conf"
   notify: Restart unbound
+  tags: [unbound-config]
 
 - name: Check unbound configuration
   command: "unbound-checkconf {{unbound.server.directory}}/unbound.conf"
