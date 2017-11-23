@@ -65,8 +65,19 @@ unbound_optimise_memory: 100
 # see <https://github.com/publicarray/ansible-role-unbound/wiki/Examples#dns-over-tls> for an example
 # common name for cert signing request
 unbound_tls_domain: example.com
-# must be one of: selfsigned,assertonly,acme. no other provider than selfsigned implemented just yet
+# must be one of: selfsigned,assertonly,acme,acme-cf. no other provider than selfsigned and acme-cf are implemented just yet
 unbound_tls_cert_provider: selfsigned
+# CloudFlare email, only used when unbound_tls_cert_provider is acme-cf
+unbound_tls_cf_email:
+# # CloudFlare API key - Do paste your plaintext key! https://docs.ansible.com/ansible/latest/playbooks_vault.html
+unbound_tls_cf_api_key:
+unbound_tls_cf_debug: true
+# production: https://acme-v01.api.letsencrypt.org/directory
+# Staging: https://acme-staging.api.letsencrypt.org/directory
+unbound_tls_ca: https://acme-staging.api.letsencrypt.org/directory
+# Production: https://acme-v01.api.letsencrypt.org/terms
+# Staging: https://acme-staging.api.letsencrypt.org/terms
+unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
 
 ## Main unbound configuration
 # See <https://unbound.net/documentation/unbound.conf.html> for more options and detailed descriptions
@@ -83,7 +94,7 @@ unbound:
     # Please update root.hints every six months or so. For example:
     # wget -O /usr/local/etc/unbound/root.hints https://www.internic.net/domain/named.cache
     root_hints: "root.hints"
-    pidfile: "/var/run/unbound.pid"
+    pidfile: "{{_unbound.pidfile|default('unbound.pid')}}"
     username: "{{_unbound.user}}"
     # if not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
@@ -93,7 +104,7 @@ unbound:
     # ssl_service_key: "private.key"
     # ssl_service_pem: "certificate.pem"
     # ssl_port: 853
-  remote_control: # unbound-control
+  remote_control:  # unbound-control
     control_enable: false
 ```
 
