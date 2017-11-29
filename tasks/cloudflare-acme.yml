@@ -26,10 +26,18 @@
     - skip_ansible_lint
   when: not ansible_check_mode
 
+# consider move to /opt directory?
 - name: Get dehydrated a letsencrypt/acme shell-script
   git:
     repo: https://github.com/lukas2511/dehydrated.git
     dest: /usr/local/src/dehydrated
+
+- name: Symlink dehydrated to /usr/local/sbin
+  file:
+    src: /usr/local/src/dehydrated/dehydrated
+    dest: /usr/local/sbin/dehydrated
+    state: link
+    mode: 0755
 
 - name: Create /usr/local/src/dehydrated/hooks directory if it doesn't exist
   file:
@@ -70,6 +78,7 @@
   command: /usr/local/src/dehydrated/dehydrated -c --accept-terms
   args:
     creates: /usr/local/etc/dehydrated/certs/{{unbound_tls_domain}}/fullchain.pem
+  notify: Restart unbound
 
 - name: Symlink privkey.pem
   file:
@@ -84,6 +93,12 @@
     dest: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
     state: link
     # mode: 0600
+
+- name: Setup cron job
+  cron:
+    name: "Dehydrated - Renew Certificate"
+    job: "/usr/local/src/dehydrated/dehydrated -c -gc -f /usr/local/etc/dehydrated/config"
+    special_time: weekly
 
 # /usr/local/etc/dehydrated/certs/my.domain.com
 # cert.csr -- cert request

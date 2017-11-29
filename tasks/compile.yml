@@ -112,8 +112,7 @@
     src: unbound.init
     dest: /etc/init.d/unbound
     mode: 0751
-  when: ansible_service_mgr == 'service' and not ansible_check_mode
-  # when: ansible_service_mgr == 'service' and ansible_os_family == 'Debian' and not ansible_check_mode
+  when: ansible_service_mgr == 'service' and ansible_os_family == 'Debian' and not ansible_check_mode
 
 - name: Copy contrib/unbound.service - systemd
   copy:

@@ -1,5 +1,5 @@
 [bsd]
-192.168.56.101 ansible_ssh_pass=toor
+192.168.56.101
 192.168.56.102
 
 [bsd:vars]
