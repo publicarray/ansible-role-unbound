@@ -1,9 +1,9 @@
 ---
 _unbound:
   pip: py27-pip
-  python_dev:
-  libffi_dev:
-  openssl_dev:
+  # python_dev:
+  # libffi_dev:
+  # openssl_dev:
   user: unbound
   conf_dir: /usr/local/etc/unbound
   dependencies:

@@ -12,10 +12,10 @@
     - openssl
     - git
     - gcc
-    - "{{_unbound.pip}}"
-    - "{{_unbound.python_dev}}"
-    - "{{_unbound.libffi_dev}}"
-    - "{{_unbound.openssl_dev}}"
+    - "{{_unbound.pip | default('openssl')}}"
+    - "{{_unbound.python_dev | default('openssl')}}"
+    - "{{_unbound.libffi_dev | default('openssl')}}"
+    - "{{_unbound.openssl_dev | default('openssl')}}"
 # when: ansible_os_family == 'Ubuntu' and ansible_os_family == 'RedHat'
 
 - name: Upgrade pip
