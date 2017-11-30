@@ -15,14 +15,14 @@
     name: "{{item}}"
     state: present
   with_items:
-    - "{{_unbound.libffi_dev}}"
-    - "{{_unbound.python_dev}}"
+    - "{{_unbound.libffi_dev | default('openssl')}}"
+    - "{{_unbound.python_dev | default('openssl')}}"
     # - python-openssl || pyOpenSSL
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
 
 - name: Install pip
   package:
-    name: "{{_unbound.pip}}"
+    name: "{{_unbound.pip | default('openssl')}}"
     state: present
 
 - name: Install pyOpenSSL
