@@ -57,14 +57,14 @@
     provider: "{{unbound_tls_cert_provider}}"
   when: not ansible_check_mode
 
-- name: Get Fingerprint
-  shell: openssl req -pubkey < *.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+- name: Get certificate fingerprint
+  shell: "openssl req -pubkey < {{unbound.server.directory}}/request.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64"
   args:
     executable: bash
   register: unbound_fingerprint
   changed_when: false
 
-- name: Display Fingerprint and example Stubby config
+- name: Display fingerprint and example Stubby config
   debug:
     msg:
       upstream_recursive_servers:
@@ -74,25 +74,3 @@
           digest: "sha256"
           value: "{{unbound_fingerprint.stdout}}"
   when: not ansible_check_mode
-
-# - name: Install certbot
-#   get_url:
-#     url: https://dl.eff.org/certbot-auto
-#     dest: /var/certbot-auto
-#     mode: 0774
-
-# - name: Get Let's Encrypt Certificate
-#   command: "/var/certbot-auto certonly --standalone -d {{unbound_tls_domain}} --csr {{unbound.server.directory}}/request.csr --register-unsafely-without-email --agree-tos --noninteractive"
-#     chdir: "{{unbound.server.directory}}"
-
-
-# openssl req -newkey rsa:2048 -nodes -subj '/CN=localhost' -keyout unbound_tls_domain.key -out unbound_tls_domain.csr
-
-# openssl req -x509 -nodes -sha256 -subj '/CN=localhost' -newkey rsa:4096 -keyout privatekey.key -out publiccert.pem -days 365
-# openssl req -key privatekey.key -new -out request.csr
-
-
-# certbot certonly -d dnsovertls.seby.io --csr request.csr --preferred-challenges dns --manual --register-unsafely-without-email --agree-tos
-
-
-# openssl req -pubkey < *.csr | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
