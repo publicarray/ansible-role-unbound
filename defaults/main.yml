@@ -19,6 +19,8 @@ unbound_optimise_memory: 100
 unbound_tls_domain: example.com
 # must be one of: selfsigned,assertonly,acme,acme-cf. no other provider than selfsigned and acme-cf are implemented just yet
 unbound_tls_cert_provider: selfsigned
+unbound_tls_dehydrated_src: /usr/local/src/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
+unbound_tls_dehydrated_etc: /usr/local/etc/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
 unbound_tls_cf_email:
 # Do paste your plaintext key! https://docs.ansible.com/ansible/latest/playbooks_vault.html
 unbound_tls_cf_api_key:
