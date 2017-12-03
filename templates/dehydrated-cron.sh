@@ -37,7 +37,7 @@ if [ ! -f "${CERT}" ]; then
 fi
 
 # 86400 seconds in a day * 30 days
-if ! "${OPENSSL}" x509 -checkend $((30 * 86400)) -noout -in "${CERT}"; then
+if "${OPENSSL}" x509 -checkend $((30 * 86400)) -noout -in "${CERT}"; then
     echo "Certificate will not expire in the next 30 days. Skipping renewal!"
     exit 0 # not an error
 fi
@@ -59,4 +59,5 @@ fi
 
 unbound-control dump_cache > "${UNBOUND_CACHE}"
 $RESTART_CMD
+sleep 2 # wait for service to accept connections
 unbound-control load_cache < "${UNBOUND_CACHE}"
