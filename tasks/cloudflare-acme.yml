@@ -103,7 +103,7 @@
 - name: Setup cron job (run every-7-days)
   cron:
     name: "Dehydrated - Renew Certificate"
-    job: "{{{unbound_tls_dehydrated_src}}/dehydrated-cron.sh"
+    job: "{{unbound_tls_dehydrated_src}}/dehydrated-cron.sh"
     # job: "{{unbound_tls_dehydrated_src}}/dehydrated -c"
     # https://crontab.guru/every-7-days
     minute: 0
