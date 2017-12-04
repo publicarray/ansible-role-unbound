@@ -47,7 +47,7 @@ I recommend that you copy and paste the variables below to your `group_vars/all/
 
 ```yml
 ---
-# Whether or not to compile unbound from source
+# Whether to compile unbound from source or to use the package manager.
 unbound_compile: false
 # The unbound version to download the source from <https://unbound.net/download.html>
 unbound_compile_version: 1.6.7
@@ -63,21 +63,41 @@ unbound_optimise_memory: 100
 
 ## DNS-over-TLS settings
 # see <https://github.com/publicarray/ansible-role-unbound/wiki/Examples#dns-over-tls> for an example
-# common name for cert signing request
+# Common name for cert signing request
 unbound_tls_domain: example.com
-# must be one of: selfsigned,assertonly,acme,acme-cf. no other provider than selfsigned and acme-cf are implemented just yet
+# Certificate generation method. Must be one of: selfsigned,assertonly,acme,acme-cf. Only selfsigned and acme-cf are implemented at the moment.
 unbound_tls_cert_provider: selfsigned
-# CloudFlare email, only used when unbound_tls_cert_provider is acme-cf
+unbound_tls_dehydrated_src: /usr/local/src/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
+unbound_tls_dehydrated_etc: /usr/local/etc/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
+# Cloudflare email address
 unbound_tls_cf_email:
-# # CloudFlare API key - Do paste your plaintext key! https://docs.ansible.com/ansible/latest/playbooks_vault.html
+# Cloudflare 'Global' API key <https://www.cloudflare.com/a/profile>
+# DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
 unbound_tls_cf_api_key:
 unbound_tls_cf_debug: true
-# production: https://acme-v01.api.letsencrypt.org/directory
+# Let's Encrypt Certificate Authority <https://letsencrypt.org/docs/staging-environment/>
+# Production: https://acme-v01.api.letsencrypt.org/directory
 # Staging: https://acme-staging.api.letsencrypt.org/directory
 unbound_tls_ca: https://acme-staging.api.letsencrypt.org/directory
 # Production: https://acme-v01.api.letsencrypt.org/terms
 # Staging: https://acme-staging.api.letsencrypt.org/terms
 unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
+
+### OpenNic <https://www.opennic.org/>
+## The address and port for the authorative server e.g. nsd <https://nlnetlabs.nl/projects/nsd/>
+# opennic_address: "127.0.0.1@5300"
+## The TLDs served by the authorative server and OpenNic
+# opennic_tlds: [ free, geek, oss, ... ]
+#
+## Example of Retriving OpenNIC TLDs
+##
+## - name: Get OpenNIC TLDs
+##   shell: "dig @45.56.115.189 TXT tlds.opennic.glue +short | grep -v '^;' | sed s/\\\"//g | tr \" \" \"\\n\""
+##   register: opennic_tlds_temp
+##   check_mode: false
+## - name: Set OpenNIC TLDs
+##   set_fact:
+##     opennic_tlds: "{{opennic_tlds_temp.stdout_lines}}"
 
 ## Main unbound configuration
 # See <https://unbound.net/documentation/unbound.conf.html> for more options and detailed descriptions
@@ -86,17 +106,15 @@ unbound:
   server:
     verbosity: 1
     # interface: [127.0.0.1, "::1"]
-    # access_control: 0.0.0.0/0 allow
+    # access_control: [0.0.0.0/0 allow, "::0 allow"]
     # use_syslog: no
     # log_time_ascii: yes
     logfile: "unbound.log"
     auto_trust_anchor_file: "root.key"
-    # Please update root.hints every six months or so. For example:
-    # wget -O /usr/local/etc/unbound/root.hints https://www.internic.net/domain/named.cache
     root_hints: "root.hints"
     pidfile: "{{_unbound.pidfile|default('unbound.pid')}}"
     username: "{{_unbound.user}}"
-    # if not compiling use distribution default directory else use unbound default directory
+    # If not compiling use distribution default directory else use unbound default directory
     directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
     chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
     ## DNS-over-TLS
