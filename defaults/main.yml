@@ -47,7 +47,7 @@ unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
 ##   shell: "dig @45.56.115.189 TXT tlds.opennic.glue +short | grep -v '^;' | sed s/\\\"//g | tr \" \" \"\\n\""
 ##   register: opennic_tlds_temp
 ##   check_mode: false
-## - name: Set OpenNIC TLDs
+## - name: Set OpenNIC TLDs - https://wiki.opennic.org/opennic/dot
 ##   set_fact:
 ##     opennic_tlds: "{{opennic_tlds_temp.stdout_lines}}"
 
