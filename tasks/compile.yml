@@ -92,6 +92,7 @@
 - name: Get $PATH
   shell: echo $PATH
   register: path
+  changed_when: false
 
 - name: Checks if the environment file already has an entry for the PATH
   replace:
