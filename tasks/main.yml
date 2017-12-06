@@ -35,6 +35,7 @@
   register: unbound_version
   changed_when: false
   check_mode: false
+  failed_when: "'command not found' in unbound_version.stdout"
 
 - name: Display unbound version
   debug:
