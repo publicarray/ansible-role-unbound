@@ -17,6 +17,12 @@
     state: present
   with_items: "{{_unbound.dependencies}}"
 
+- name: Get ports index - FreeBSD
+  command: portsnap auto
+  args:
+    creates: /usr/ports
+  when: ansible_os_family == 'FreeBSD'
+
 - name: Install unbound from port - FreeBSD
   portinstall:
     name: unbound
@@ -87,46 +93,6 @@
   register: result
   changed_when: false
   when: ansible_os_family != 'FreeBSD' and not ansible_check_mode
-
-# https://coderwall.com/p/ynvi0q/updating-path-with-ansible-system-wide
-- name: Get $PATH
-  shell: echo $PATH
-  register: path
-  changed_when: false
-
-- name: Checks if the environment file already has an entry for the PATH
-  replace:
-    dest=/etc/environment
-    regexp="PATH=(.*)"
-    replace="PATH=\1"
-  register: checkIfPATHIsHere
-
-- name: Add a PATH entry with /usr/local/sbin if the PATH is not already defined
-  lineinfile:
-    dest=/etc/environment
-    state=present
-    line="PATH={{path.stdout}}:/usr/local/bin:/usr/local/sbin"
-    regexp=''
-    insertafter=EOF
-  when: checkIfPATHIsHere.changed == false
-
-- name: add /usr/local/bin to the PATH
-  lineinfile:
-    dest=/etc/environment
-    state=present
-    backrefs=no
-    regexp="PATH=(["])((?!.?/usr/local/bin).?)(["])$"
-    line="PATH=\1\2:/usr/local/bin\3"
-  when: checkIfPATHIsHere.changed
-
-- name: add /usr/local/sbin to the PATH
-  lineinfile:
-    dest=/etc/environment
-    state=present
-    backrefs=no
-    regexp="PATH=(["])((?!.?/usr/local/sbin).?)(["])$"
-    line="PATH=\1\2:/usr/local/sbin\3"
-  when: checkIfPATHIsHere.changed
 
 # Fix: error while loading shared libraries: libunbound.so.2: cannot open shared object file: No such file or directory
 - name: Tell system about new shared libraries - Debian

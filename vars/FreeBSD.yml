@@ -10,3 +10,9 @@ _unbound:
     - libevent
     - libsodium
     - ldns
+    - expat2
+    # build dependencies
+    - autoconf
+    - automake
+    - libtool
+    - pkgconf

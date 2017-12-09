@@ -1,0 +1,48 @@
+---
+- name: Update $PATH - sh/bash/ksh - /etc/profile
+  lineinfile:
+    dest: /etc/profile
+    create: true
+    line: "export PATH=/usr/local/bin:/usr/local/sbin:$PATH"
+  when: "'/sh' in ansible_user_shell or '/bash' in ansible_user_shell or '/ksh' in ansible_user_shell"
+
+# - name: Update $PATH - sh/ksh - /etc/shrc
+#   lineinfile:
+#     dest: /etc/shrc
+#     create: true
+#     line: "export PATH=/usr/local/bin:/usr/local/sbin:$PATH"
+#   when: "'/sh' in ansible_user_shell or '/ksh' in ansible_user_shell"
+
+# - name: Update $PATH - bash - /etc/bashrc
+#   lineinfile:
+#     dest: /etc/bashrc
+#     create: true
+#     line: "export PATH=/usr/local/bin:/usr/local/sbin:$PATH"
+#   when: "'/bash' in ansible_user_shell"
+
+- name: Update $PATH - zsh - /etc/zshenv
+  lineinfile:
+    dest: /etc/zshenv
+    create: true
+    line: "export PATH=/usr/local/bin:/usr/local/sbin:$PATH"
+  when: "'/zsh' in ansible_user_shell"
+
+- name: Update $PATH - csh/tcsh - /etc/csh.cshrc
+  lineinfile:
+    dest: /etc/csh.cshrc
+    create: true
+    line: "setenv PATH /usr/local/bin:/usr/local/sbin:$PATH"
+  when: "'/csh' in ansible_user_shell or '/tcsh' in ansible_user_shell"
+
+# - name: Update $PATH - csh - /etc/login.conf - default for all users
+#   lineinfile:
+#     dest: /etc/login.conf
+#     regexp: ' {8}:path=.*'
+#     line: ":path=/usr/local/sbin /usr/local/bin /sbin /bin /usr/sbin /usr/bin ~/bin:\\"
+#   when: "'/csh' in ansible_user_shell and ansible_os_family == 'FreeBSD'"
+
+- name: Update $PATH - fish
+  shell: set -U fish_user_paths "/usr/local/bin" $fish_user_paths; set -U fish_user_paths "/usr/local/sbin" $fish_user_paths
+  args:
+    executable: "{{ansible_user_shell}}"
+  when: "'/fish' in ansible_user_shell"
