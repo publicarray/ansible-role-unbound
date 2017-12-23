@@ -28,7 +28,7 @@
   import_tasks: compile.yml
   when: unbound_compile is defined and unbound_compile == true
 
-- name: Ensure local_unbound (old) is stopped annd disabled - FreeBSD
+- name: Ensure local_unbound (old) is stopped and disabled - FreeBSD
   service:
     name: local_unbound
     state: stopped
@@ -49,13 +49,12 @@
     msg: "{{unbound_version.stdout}}"
 
 - name: Get $PATH
-  shell: echo $PATH
-  register: path
-  changed_when: false
+  debug:
+    var: ansible_env.PATH
 
 - name: Update $PATH when compiled
   import_tasks: update-path.yml
-  when: "unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in path.stdout or unbound_compile_version not in unbound_version.stdout)"
+  when: "unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in ansible_env.PATH or unbound_compile_version not in unbound_version.stdout)"
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
