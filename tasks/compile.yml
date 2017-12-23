@@ -23,6 +23,10 @@
     creates: /usr/ports
   when: ansible_os_family == 'FreeBSD'
 
+# For *BSD investigate the possably to compile with gcc due to DNSSEC SERVFAIL issue
+# http://unbound.nlnetlabs.nl/pipermail/unbound-users/2017-December/005026.html
+# Next version of unbound disables -O2 with clang and fixes the problem.
+# (set -x CC gcc;set -x CXX g++; export CC=gcc; export CXX=g++)
 - name: Install unbound from port - FreeBSD
   portinstall:
     name: unbound
