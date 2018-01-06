@@ -4,6 +4,7 @@ _unbound:
   python_dev: python-devel
   libffi_dev: libffi-devel
   openssl_dev: openssl-devel
+  cron: crontabs
   user: unbound
   conf_dir: /etc/unbound
   pidfile: /var/run/unbound.pid

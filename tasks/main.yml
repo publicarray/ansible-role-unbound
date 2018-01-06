@@ -22,11 +22,11 @@
   package:
     name: unbound
     state: present
-  when: unbound_compile is not defined or unbound_compile == false
+  when: unbound_compile is undefined or not unbound_compile # unbound_compile == false
 
 - name: Prepare to compile unbound
   import_tasks: compile.yml
-  when: unbound_compile is defined and unbound_compile == true
+  when: unbound_compile is defined and unbound_compile # unbound_compile == true
 
 - name: Ensure local_unbound (old) is stopped and disabled - FreeBSD
   service:
@@ -38,7 +38,7 @@
 - name: Get unbound version
   shell: "unbound -h | grep Version | cut -d ' ' -f2"
   args:
-    executable: bash
+    executable: /bin/sh
   register: unbound_version
   changed_when: false
   check_mode: false
@@ -58,11 +58,7 @@
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
-  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined and unbound_tls_cert_provider != "acme-cf"
-
-- name: Prepare dns-over-tls with acme and cloudflare
-  import_tasks: cloudflare-acme.yml
-  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined and unbound_tls_cert_provider == "acme-cf"
+  when: unbound.server.ssl_service_key is defined and unbound.server.ssl_service_pem is defined and unbound_tls_domain is defined
 
 # fix: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=763901
 - name: Set unbound folder permissions

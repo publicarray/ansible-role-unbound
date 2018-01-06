@@ -1,0 +1,53 @@
+---
+- name: Install libssl-dev - Debian
+  package:
+    name: "{{_unbound.openssl_dev}}"
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Install python-dev and libffi-dev - Ubuntu trusty
+  package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - "{{_unbound.libffi_dev | default('openssl')}}"
+    - "{{_unbound.python_dev | default('openssl')}}"
+    # - python-openssl || pyOpenSSL
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+
+- name: Install pip
+  package:
+    name: "{{_unbound.pip | default('openssl')}}"
+    state: present
+
+- name: Install pyOpenSSL
+  pip:
+    name: "{{item}}"
+    state: latest
+  with_items:
+    - setuptools
+    - pip
+    - pyopenssl
+  tags:
+    - skip_ansible_lint
+  when: not ansible_check_mode
+
+- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  openssl_privatekey:
+    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+  when: not ansible_check_mode
+
+- name: Generate an OpenSSL Certificate Signing Request
+  openssl_csr:
+    path: "{{unbound.server.directory}}/request.csr"
+    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+    common_name: "{{unbound_tls_domain}}"
+  when: not ansible_check_mode
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
+    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
+    csr_path: "{{unbound.server.directory}}/request.csr"
+    provider: "{{unbound_tls_cert_provider}}"
+  when: not ansible_check_mode

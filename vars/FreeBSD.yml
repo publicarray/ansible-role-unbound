@@ -4,13 +4,14 @@ _unbound:
   # python_dev:
   # libffi_dev:
   # openssl_dev:
+  # cron:
   user: unbound
   conf_dir: /usr/local/etc/unbound
   dependencies:
     - libevent
     - libsodium
     - ldns
-    - expat2
+    - expat2 #?
     # build dependencies
     - autoconf
     - automake

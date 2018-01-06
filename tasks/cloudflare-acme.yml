@@ -109,21 +109,3 @@
     minute: 0
     hour: 0
     weekday: 0 # Sunday
-
-- name: Get certificate fingerprint
-  shell: "openssl x509 -in {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}} -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64"
-  args:
-    executable: bash
-  register: unbound_fingerprint
-  changed_when: false
-
-- name: Display fingerprint and example Stubby config
-  debug:
-    msg:
-      upstream_recursive_servers:
-        address_data: "{{ansible_default_ipv4.address if ansible_default_ipv4 is defined else \"<the server's ip address>\"}}"
-        tls_auth_name: "{{unbound_tls_domain}}"
-        tls_pubkey_pinset:
-          digest: "sha256"
-          value: "{{unbound_fingerprint.stdout}}"
-  when: not ansible_check_mode

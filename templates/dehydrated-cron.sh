@@ -15,7 +15,7 @@ set -e
 : "${OPENSSL:=openssl}"
 # Unbound restart command.
 # Note: 'unbound-control reload' is not enough.
-# unbound needs to reload file desciptors becaurse unbound does not
+# unbound needs to reload file descriptors because unbound does not
 # have the permissions to read the certificate file while running.
 : "${RESTART_CMD:=service unbound restart}" # MacOS: sudo brew services restart unbound
 # File to save current unbound cache.

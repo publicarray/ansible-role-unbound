@@ -17,23 +17,37 @@ unbound_optimise_memory: 100
 # see <https://github.com/publicarray/ansible-role-unbound/wiki/Examples#dns-over-tls> for an example
 # Common name for cert signing request
 unbound_tls_domain: example.com
-# Certificate generation method. Must be one of: selfsigned,assertonly,acme,acme-cf. Only selfsigned and acme-cf are implemented at the moment.
+# Certificate generation method. Must be one of: selfsigned,assertonly,acme,acme-cf. Only selfsigned, acme and acme-cf are implemented at the moment.
 unbound_tls_cert_provider: selfsigned
-unbound_tls_dehydrated_src: /usr/local/src/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
-unbound_tls_dehydrated_etc: /usr/local/etc/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
-# Cloudflare email address
-unbound_tls_cf_email:
-# Cloudflare 'Global' API key <https://www.cloudflare.com/a/profile>
-# DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
-unbound_tls_cf_api_key:
-unbound_tls_cf_debug: true
-# Let's Encrypt Certificate Authority <https://letsencrypt.org/docs/staging-environment/>
-# Production: https://acme-v01.api.letsencrypt.org/directory
-# Staging: https://acme-staging.api.letsencrypt.org/directory
-unbound_tls_ca: https://acme-staging.api.letsencrypt.org/directory
-# Production: https://acme-v01.api.letsencrypt.org/terms
-# Staging: https://acme-staging.api.letsencrypt.org/terms
-unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
+# unbound_tls_dehydrated_src: /usr/local/src/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
+# unbound_tls_dehydrated_etc: /usr/local/etc/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
+## https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
+unbound_tls_acme_auto_upgrade: 0
+# Set env variables for using DNS as domain validation
+unbound_tls_acme_dns_acc:
+  # CloudFlare email address
+  CF_Email: ''
+  # CloudFlare 'Global' API key <https://www.cloudflare.com/a/profile>
+  # DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
+  CF_Key: ''
+# Certificate Authority, Default is Let's Encrypt v1, v2 coming in 27th of Feb 2018 (--server)
+# https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605
+# - https://acme-v02.api.letsencrypt.org/directory
+unbound_tls_acme_ca: https://acme-v01.api.letsencrypt.org/directory
+# Use staging server for testing (--staging, --test)
+# https://letsencrypt.org/docs/staging-environment/
+unbound_tls_acme_staging: false
+# Available modes are standalone, stateless, tls, apache, dns [dns_cf|dns_dp|dns_cx|/path/to/api/file]
+unbound_tls_acme_mode: dns dns_cf
+# [2048, 3072, 4096, 8192 or ec-256, ec-384] (--keylength, -k)
+unbound_tls_acme_keysize: 4096
+# ECC (Elliptic Curve Cryptography) Certificate (--ecc)
+unbound_tls_acme_ecc: false
+# Output debug info (--debug)
+unbound_tls_acme_debug: false
+# Any additional commands. https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
+# e.g --force, --dnssleep 300, --webroot /path/to/webroot/
+unbound_tls_acme_custom: ""
 
 ### OpenNic <https://www.opennic.org/>
 ## The address and port for the authorative server e.g. nsd <https://nlnetlabs.nl/projects/nsd/>
@@ -41,7 +55,7 @@ unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
 ## The TLDs served by the authorative server and OpenNic
 # opennic_tlds: [ free, geek, oss, ... ]
 #
-## Example of Retriving OpenNIC TLDs
+## Example of Retrieving OpenNIC TLDs
 ##
 ## - name: Get OpenNIC TLDs
 ##   shell: "dig @45.56.115.189 TXT tlds.opennic.glue +short | grep -v '^;' | sed s/\\\"//g | tr \" \" \"\\n\""
