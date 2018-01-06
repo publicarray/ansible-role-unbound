@@ -24,12 +24,15 @@ unbound_tls_cert_provider: selfsigned
 ## https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
 unbound_tls_acme_auto_upgrade: 0
 # Set env variables for using DNS as domain validation
+# Please see https://github.com/limaomei1986/acme.sh/blob/master/dnsapi/README.md for details
 unbound_tls_acme_dns_acc:
   # CloudFlare email address
   CF_Email: ''
   # CloudFlare 'Global' API key <https://www.cloudflare.com/a/profile>
   # DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
   CF_Key: ''
+  # CloudFlare API url
+  CF_Api: 'https://api.cloudflare.com/client/v4'
 # Certificate Authority, Default is Let's Encrypt v1, v2 coming in 27th of Feb 2018 (--server)
 # https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605
 # - https://acme-v02.api.letsencrypt.org/directory
@@ -47,7 +50,7 @@ unbound_tls_acme_ecc: false
 unbound_tls_acme_debug: false
 # Any additional commands. https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
 # e.g --force, --dnssleep 300, --webroot /path/to/webroot/
-unbound_tls_acme_custom: ""
+unbound_tls_acme_custom:
 
 ### OpenNic <https://www.opennic.org/>
 ## The address and port for the authorative server e.g. nsd <https://nlnetlabs.nl/projects/nsd/>
