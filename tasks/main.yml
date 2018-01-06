@@ -13,7 +13,7 @@
     name: bash
     state: present
 
-- name: Install wget (used for roothints updating)
+- name: Install wget (used for updating roothints)
   package:
     name: wget
     state: present

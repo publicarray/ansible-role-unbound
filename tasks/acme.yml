@@ -7,15 +7,33 @@
     state: directory
 
 ## https://github.com/Neilpang/acme.sh/wiki/Install-preparations
-- name: Install curl, cron and netcat
+- name: Install curl, cron and socat (for standalone mode)
   package:
     name: "{{item}}"
     state: present
   with_items:
     - curl
     - "{{_unbound.cron | default('cron')}}"
-    - socat # netcat-openbsd (?), socat (redhat)
+    - socat # netcat-openbsd (?), socat
   when: ansible_os_family != 'freeBSD'
+
+- name: Install curl - FreeBSD
+  package:
+    name: curl
+    state: present
+  when: ansible_os_family == 'freeBSD'
+
+- name: Install curl - FreeBSD
+  package:
+    name: curl
+    state: present
+  when: ansible_os_family == 'freeBSD'
+
+- name: Install socat from port (for standalone mode) - FreeBSD
+  portinstall:
+    name: socat
+    state: present
+  when: ansible_os_family == 'FreeBSD'
 
 # Todo ansiblefy this
 - name: Get acme.sh for Let's Encrypt
@@ -31,19 +49,19 @@
 
 - name: Read variables and construct commands
   set_fact:
-    unbound_tls_acme_ecc:     "{% if unbound_tls_acme_ecc %}     '--ecc'     {% else %} '' {% endif %}"
-    unbound_tls_acme_staging: "{% if unbound_tls_acme_staging %} '--staging' {% else %} '' {% endif %}"
-    unbound_tls_acme_debug:   "{% if unbound_tls_acme_debug %}   '--debug'   {% else %} '' {% endif %}"
+    unbound_tls_acme_ecc: "{% if unbound_tls_acme_ecc %}--ecc{% else %} {% endif %}"
+    unbound_tls_acme_staging: "{% if unbound_tls_acme_staging %}--staging{% else %} {% endif %}"
+    unbound_tls_acme_debug: "{% if unbound_tls_acme_debug %}--debug{% else %} {% endif %}"
 
 - name: Issue Certificate
-  command: |
-    "/root/.acme.sh/acme.sh --issue {{unbound_tls_acme_staging}} {{unbound_tls_acme_debug}} {{unbound_tls_acme_ecc}} \
-      --domain {{unbound_tls_domain}} \
-      --{{unbound_tls_acme_mode|default(standalone, true)}} \
-      --keylength {{unbound_tls_acme_keysize|default(2048, true)}}
-      --key-file {{unbound.server.directory}}/{{unbound.server.ssl_service_key}} \
-      --fullchain-file {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}
-      --reloadcmd 'service unbound restart' {{unbound_tls_acme_custom}}"
+  shell: >
+    /root/.acme.sh/acme.sh --issue {{unbound_tls_acme_staging}} {{unbound_tls_acme_debug}} {{unbound_tls_acme_ecc}}
+    --domain {{unbound_tls_domain}}
+    --{{unbound_tls_acme_mode|default('standalone', true)}}
+    --keylength {{unbound_tls_acme_keysize|default('2048', true)}}
+    --key-file {{unbound.server.directory}}/{{unbound.server.ssl_service_key}}
+    --fullchain-file {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}
+    --reloadcmd 'service unbound restart' {{unbound_tls_acme_custom}}
   args:
     executable: /bin/sh
     creates: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"

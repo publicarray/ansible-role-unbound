@@ -4,7 +4,6 @@ _unbound:
   # python_dev:
   # libffi_dev:
   # openssl_dev:
-  # cron:
   user: unbound
   conf_dir: /usr/local/etc/unbound
   dependencies:
