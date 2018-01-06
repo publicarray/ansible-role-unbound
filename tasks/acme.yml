@@ -23,12 +23,6 @@
     state: present
   when: ansible_os_family == 'freeBSD'
 
-- name: Install curl - FreeBSD
-  package:
-    name: curl
-    state: present
-  when: ansible_os_family == 'freeBSD'
-
 - name: Install socat from port (for standalone mode) - FreeBSD
   portinstall:
     name: socat
