@@ -71,6 +71,18 @@ unbound_tls_cert_provider: selfsigned
 ## acme.sh options https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
 # Option to automatically update the acme.sh script, 0 = false, 1 = true
 unbound_tls_acme_auto_upgrade: 0
+# Certificate Authority. The default is the Let's Encrypt API v1, v2 is coming in 27th of Feb 2018 (--server)
+# https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605
+# - https://acme-v02.api.letsencrypt.org/directory
+unbound_tls_acme_ca: https://acme-v01.api.letsencrypt.org/directory
+# Use staging server for testing (--staging, --test)
+# https://letsencrypt.org/docs/staging-environment/
+# NOTE: when changing from staging to production you need to set 'unbound_tls_acme_force' to true.
+unbound_tls_acme_staging: false
+# Force create a cert (ignore expiation date)
+unbound_tls_acme_force: false
+# Domain validation mode. Available modes are standalone, stateless, tls, apache, dns [dns_cf|dns_dp|dns_cx|/path/to/api/file]
+unbound_tls_acme_mode: dns dns_cf
 # Set env variables for using DNS as domain validation
 # Please see https://github.com/limaomei1986/acme.sh/blob/master/dnsapi/README.md for details
 unbound_tls_acme_dns_acc:
@@ -81,15 +93,6 @@ unbound_tls_acme_dns_acc:
   CF_Key:
   # CloudFlare API url
   CF_Api: https://api.cloudflare.com/client/v4
-# Certificate Authority. The default is Let's Encrypt v1, v2 is coming in 27th of Feb 2018 (--server)
-# https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605
-# - https://acme-v02.api.letsencrypt.org/directory
-unbound_tls_acme_ca: https://acme-v01.api.letsencrypt.org/directory
-# Use staging server for testing (--staging, --test)
-# https://letsencrypt.org/docs/staging-environment/
-unbound_tls_acme_staging: false
-# Domain validation mode. Available modes are standalone, stateless, tls, apache, dns [dns_cf|dns_dp|dns_cx|/path/to/api/file]
-unbound_tls_acme_mode: dns dns_cf
 # Keylength [2048, 3072, 4096, 8192 or ec-256, ec-384] (--keylength, -k)
 unbound_tls_acme_keysize: 4096
 # Create a ECC (Elliptic Curve Cryptography) Certificate (--ecc)
@@ -97,7 +100,7 @@ unbound_tls_acme_ecc: false
 # Output debug info (--debug)
 unbound_tls_acme_debug: false
 # Any additional commands. https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
-# e.g --force, --dnssleep 300, --webroot /path/to/webroot/
+# e.g --dnssleep 300, --webroot /path/to/webroot/
 unbound_tls_acme_custom:
 
 ### OpenNic <https://www.opennic.org/>
