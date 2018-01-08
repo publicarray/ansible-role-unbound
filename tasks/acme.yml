@@ -36,19 +36,19 @@
     src: account.conf
     dest: /root/.acme.sh/account.conf
 
-- name: Read variables and construct commands
-  set_fact:
-    unbound_tls_acme_ecc: "{% if unbound_tls_acme_ecc %} --ecc{% else %} {% endif %}"
-    unbound_tls_acme_staging: "{% if unbound_tls_acme_staging %} --staging{% else %} {% endif %}"
-    unbound_tls_acme_force: "{% if unbound_tls_acme_force %} --force{% else %} {% endif %}"
-    unbound_tls_acme_debug: "{% if unbound_tls_acme_debug %} --debug{% else %} {% endif %}"
-
 # I know it's not ideal but it works
 - name: Force option
   file:
     path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
     state: absent
   when: unbound_tls_acme_force
+
+- name: Read variables and construct commands
+  set_fact:
+    unbound_tls_acme_ecc: "{% if unbound_tls_acme_ecc %} --ecc{% else %} {% endif %}"
+    unbound_tls_acme_staging: "{% if unbound_tls_acme_staging %} --staging{% else %} {% endif %}"
+    unbound_tls_acme_force: "{% if unbound_tls_acme_force %} --force{% else %} {% endif %}"
+    unbound_tls_acme_debug: "{% if unbound_tls_acme_debug %} --debug{% else %} {% endif %}"
 
 - name: Issue Certificate
   shell: >
