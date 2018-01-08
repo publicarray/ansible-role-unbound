@@ -14,7 +14,7 @@
 
 
 # CloudFlare configs
-export CF_DEBUG={{unbound_tls_cf_debug}}
+export CF_DEBUG={{unbound_tls_cf_debug|default('false')}}
 export CF_EMAIL={{unbound_tls_cf_email}}
 export CF_KEY={{unbound_tls_cf_api_key}}
 
@@ -25,10 +25,10 @@ export CF_KEY={{unbound_tls_cf_api_key}}
 #IP_VERSION=
 
 # Path to certificate authority (default: https://acme-v01.api.letsencrypt.org/directory)
-CA="{{unbound_tls_ca}}"
+CA="{{unbound_tls_ca|default('https://acme-v01.api.letsencrypt.org/directory')}}"
 
 # Path to certificate authority license terms redirect (default: https://acme-v01.api.letsencrypt.org/terms)
-CA_TERMS="{{unbound_tls_ca_terms}}"
+CA_TERMS="{{unbound_tls_ca_terms|default('https://acme-v01.api.letsencrypt.org/terms')}}"
 
 # Path to license agreement (default: <unset>)
 #LICENSE=""

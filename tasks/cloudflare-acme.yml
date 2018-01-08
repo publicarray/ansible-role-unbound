@@ -1,10 +1,17 @@
 ---
+
+- name: Print deprecation warning for acme-cf
+  debug:
+    msg:
+      - The option `unbound_tls_cert_provider:acme-cf` is depreciated and will be removed in the next major version!
+      - The new option `unbound_tls_cert_provider:acme` is the new preferred way to create Let's Encrypt certs
+
 - name: Create /usr/local/src directory if it doesn't exist
   file:
     path: /usr/local/src/
     state: directory
 
-- name: Install openssl git gcc pip python-dev libffi libssl/openssl-devel
+- name: Install openssl git gcc pip python-dev libffi libssl/openssl-devel and cron
   package:
     name: "{{item}}"
     state: present
@@ -16,6 +23,7 @@
     - "{{_unbound.python_dev | default('openssl')}}"
     - "{{_unbound.libffi_dev | default('openssl')}}"
     - "{{_unbound.openssl_dev | default('openssl')}}"
+    - "{{_unbound.cron | default('openssl')}}"
 # when: ansible_os_family == 'Ubuntu' and ansible_os_family == 'RedHat'
 
 - name: Upgrade pip
@@ -94,7 +102,7 @@
     state: link
     # mode: 0600
 
-- name: Setup cron job (run every-7-days)
+- name: Copy cron script (run every-7-days)
   template:
     src: "dehydrated-cron.sh"
     dest: "{{unbound_tls_dehydrated_src}}/dehydrated-cron.sh"

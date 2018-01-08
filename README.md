@@ -65,23 +65,40 @@ unbound_optimise_memory: 100
 # see <https://github.com/publicarray/ansible-role-unbound/wiki/Examples#dns-over-tls> for an example
 # Common name for cert signing request
 unbound_tls_domain: example.com
-# Certificate generation method. Must be one of: selfsigned,assertonly,acme,acme-cf. Only selfsigned and acme-cf are implemented at the moment.
+# Certificate generation method. Must be one of: selfsigned or acme.
+# The 'acme-cf' option (implemented with dehydrated) is deprecated in favor of the new 'acme' option (implemented with acme.sh)
 unbound_tls_cert_provider: selfsigned
-unbound_tls_dehydrated_src: /usr/local/src/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
-unbound_tls_dehydrated_etc: /usr/local/etc/dehydrated  # only used when unbound_tls_cert_provider == acme-cf
-# Cloudflare email address
-unbound_tls_cf_email:
-# Cloudflare 'Global' API key <https://www.cloudflare.com/a/profile>
-# DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
-unbound_tls_cf_api_key:
-unbound_tls_cf_debug: true
-# Let's Encrypt Certificate Authority <https://letsencrypt.org/docs/staging-environment/>
-# Production: https://acme-v01.api.letsencrypt.org/directory
-# Staging: https://acme-staging.api.letsencrypt.org/directory
-unbound_tls_ca: https://acme-staging.api.letsencrypt.org/directory
-# Production: https://acme-v01.api.letsencrypt.org/terms
-# Staging: https://acme-staging.api.letsencrypt.org/terms
-unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
+## acme.sh options https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
+# Option to automatically update the acme.sh script, 0 = false, 1 = true
+unbound_tls_acme_auto_upgrade: 0
+# Set env variables for using DNS as domain validation
+# Please see https://github.com/limaomei1986/acme.sh/blob/master/dnsapi/README.md for details
+unbound_tls_acme_dns_acc:
+  # CloudFlare email address
+  CF_Email:
+  # CloudFlare 'Global' API key <https://www.cloudflare.com/a/profile>
+  # DO NOT paste your plaintext key! <https://docs.ansible.com/ansible/latest/playbooks_vault.html>
+  CF_Key:
+  # CloudFlare API url
+  CF_Api: https://api.cloudflare.com/client/v4
+# Certificate Authority. The default is Let's Encrypt v1, v2 is coming in 27th of Feb 2018 (--server)
+# https://community.letsencrypt.org/t/staging-endpoint-for-acme-v2/49605
+# - https://acme-v02.api.letsencrypt.org/directory
+unbound_tls_acme_ca: https://acme-v01.api.letsencrypt.org/directory
+# Use staging server for testing (--staging, --test)
+# https://letsencrypt.org/docs/staging-environment/
+unbound_tls_acme_staging: false
+# Domain validation mode. Available modes are standalone, stateless, tls, apache, dns [dns_cf|dns_dp|dns_cx|/path/to/api/file]
+unbound_tls_acme_mode: dns dns_cf
+# Keylength [2048, 3072, 4096, 8192 or ec-256, ec-384] (--keylength, -k)
+unbound_tls_acme_keysize: 4096
+# Create a ECC (Elliptic Curve Cryptography) Certificate (--ecc)
+unbound_tls_acme_ecc: false
+# Output debug info (--debug)
+unbound_tls_acme_debug: false
+# Any additional commands. https://github.com/Neilpang/acme.sh/wiki/Options-and-Params
+# e.g --force, --dnssleep 300, --webroot /path/to/webroot/
+unbound_tls_acme_custom:
 
 ### OpenNic <https://www.opennic.org/>
 ## The address and port for the authorative server e.g. nsd <https://nlnetlabs.nl/projects/nsd/>
@@ -89,13 +106,13 @@ unbound_tls_ca_terms: https://acme-staging.api.letsencrypt.org/terms
 ## The TLDs served by the authorative server and OpenNic
 # opennic_tlds: [ free, geek, oss, ... ]
 #
-## Example of Retriving OpenNIC TLDs
+## Example of Retrieving OpenNIC TLDs
 ##
 ## - name: Get OpenNIC TLDs
 ##   shell: "dig @45.56.115.189 TXT tlds.opennic.glue +short | grep -v '^;' | sed s/\\\"//g | tr \" \" \"\\n\""
 ##   register: opennic_tlds_temp
 ##   check_mode: false
-## - name: Set OpenNIC TLDs
+## - name: Set OpenNIC TLDs - https://wiki.opennic.org/opennic/dot
 ##   set_fact:
 ##     opennic_tlds: "{{opennic_tlds_temp.stdout_lines}}"
 
@@ -109,9 +126,9 @@ unbound:
     # access_control: [0.0.0.0/0 allow, "::0 allow"]
     # use_syslog: no
     # log_time_ascii: yes
-    logfile: "unbound.log"
-    auto_trust_anchor_file: "root.key"
-    root_hints: "root.hints"
+    logfile: unbound.log
+    auto_trust_anchor_file: root.key
+    root_hints: root.hints
     pidfile: "{{_unbound.pidfile|default('unbound.pid')}}"
     username: "{{_unbound.user}}"
     # If not compiling use distribution default directory else use unbound default directory
@@ -124,6 +141,7 @@ unbound:
     # ssl_port: 853
   remote_control:  # unbound-control
     control_enable: false
+
 ```
 
 
