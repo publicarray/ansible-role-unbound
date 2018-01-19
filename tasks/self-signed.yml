@@ -10,15 +10,21 @@
     name: "{{item}}"
     state: present
   with_items:
-    - "{{_unbound.libffi_dev | default('openssl')}}"
-    - "{{_unbound.python_dev | default('openssl')}}"
+    - "{{_unbound.libffi_dev}}"
+    - "{{_unbound.python_dev}}"
     # - python-openssl || pyOpenSSL
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
 
 - name: Install pip
   package:
-    name: "{{_unbound.pip | default('openssl')}}"
+    name: "{{_unbound.pip}}"
     state: present
+
+- name: Install py-OpenSSL - OpenBSD
+  package:
+    name: "py-openssl"
+    state: present
+  when: ansible_os_family == 'OpenBSD'
 
 - name: Install pyOpenSSL
   pip:
@@ -30,7 +36,7 @@
     - pyopenssl
   tags:
     - skip_ansible_lint
-  when: not ansible_check_mode
+  when: not ansible_check_mode and ansible_os_family != 'OpenBSD'
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   openssl_privatekey:

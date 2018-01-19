@@ -22,11 +22,11 @@
   package:
     name: unbound
     state: present
-  when: unbound_compile is undefined or not unbound_compile # unbound_compile == false
+  when: ansible_os_family != 'OpenBSD' and (unbound_compile is undefined or not unbound_compile) # unbound_compile == false
 
 - name: Prepare to compile unbound
   import_tasks: compile.yml
-  when: unbound_compile is defined and unbound_compile # unbound_compile == true
+  when: ansible_os_family != 'OpenBSD' and (unbound_compile is defined and unbound_compile) # unbound_compile == true
 
 - name: Ensure local_unbound (old) is stopped and disabled - FreeBSD
   service:
@@ -54,7 +54,7 @@
 
 - name: Update $PATH when compiled
   import_tasks: update-path.yml
-  when: "unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in ansible_env.PATH or unbound_compile_version not in unbound_version.stdout)"
+  when: ansible_os_family != 'OpenBSD' and unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in ansible_env.PATH or unbound_compile_version not in unbound_version.stdout)
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
@@ -92,13 +92,13 @@
   register: auto_trust_anchor_file
   check_mode: no
 
-- name: Install awk (used for shell scripts/commands)
+- name: Install awk (used for shell scripts/commands) - RedHat
   package:
     name: gawk
     state: present
   when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True
 
-- name: Check whether auto_trust_anchor_file contains "root key in bind format"
+- name: Check whether auto_trust_anchor_file contains "root key in bind format" - RedHat
   command: awk '/root key in bind format/' {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}
   register: is_bind_format
   changed_when: false
