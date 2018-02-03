@@ -35,6 +35,7 @@
   template:
     src: account.conf
     dest: /root/.acme.sh/account.conf
+  no_log: True
 
 # I know it's not ideal but it works
 - name: Force option
