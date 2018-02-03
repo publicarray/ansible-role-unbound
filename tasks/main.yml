@@ -35,19 +35,6 @@
     enabled: false
   when: ansible_os_family == 'FreeBSD'
 
-- name: Get unbound version
-  shell: "unbound -h | grep Version | cut -d ' ' -f2"
-  args:
-    executable: /bin/sh
-  register: unbound_version
-  changed_when: false
-  check_mode: false
-  failed_when: "'command not found' in unbound_version.stdout"
-
-- name: Display unbound version
-  debug:
-    msg: "{{unbound_version.stdout}}"
-
 - name: Get $PATH
   debug:
     var: ansible_env.PATH
@@ -55,6 +42,19 @@
 - name: Update $PATH when compiled
   import_tasks: update-path.yml
   when: ansible_os_family != 'OpenBSD' and unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in ansible_env.PATH or unbound_compile_version not in unbound_version.stdout)
+
+- name: Get unbound version
+  shell: "unbound -h | grep Version | cut -d ' ' -f2"
+  args:
+    executable: /bin/sh
+  register: unbound_version
+  changed_when: false
+  check_mode: false
+  failed_when: "'command not found' in unbound_version.stderr"
+
+- name: Display unbound version
+  debug:
+    msg: "{{unbound_version.stdout}}"
 
 - name: Prepare dns-over-tls
   import_tasks: dns-over-tls.yml
