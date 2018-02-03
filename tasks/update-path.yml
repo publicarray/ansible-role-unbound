@@ -1,7 +1,8 @@
 ---
-- name: Update $PATH - sh/bash/ksh - /etc/profile
+# - name: Update $PATH - sh/bash/ksh - /etc/profile
+- name: Update $PATH - sh/bash/ksh - /etc/profile.d/env.sh
   lineinfile:
-    dest: /etc/profile
+    dest: /etc/profile.d/env.sh
     create: true
     line: "export PATH=/usr/local/bin:/usr/local/sbin:$PATH"
   when: "'/sh' in ansible_user_shell or '/bash' in ansible_user_shell or '/ksh' in ansible_user_shell"

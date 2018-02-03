@@ -4,6 +4,8 @@
   remote_user: root
   roles:
     - role: ansible-role-unbound
+  environment:
+    PATH: /usr/local/bin:/usr/local/sbin:{{ansible_env.PATH}}
   vars:
     - opennic_tlds: [free, geek, oss]
     - opennic_address: 127.0.0.1@1234  # ip@port
