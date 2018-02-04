@@ -28,13 +28,17 @@ ProtectHome=true
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=true
-{% if ansible_distribution != 'Debian' and ansible_distribution_release != 'stretch' %}
+{% if ansible_os_family != 'Debian' and ansible_distribution_release != 'stretch' %}
 {# Fix: Unbound crash debian9-stretch #}
 ProtectSystem=strict
-{# Fix: Unable to start service unbound on debian9-stretch -> (code=exited, status=226/NAMESPACE) #}
+{% endif %}
+{% if ansible_os_family != 'Debian' and (ansible_distribution_release != 'stretch' or ansible_distribution_release != 'artful') %}
+{# Fix: Unable to start service unbound on debian9-stretch, ubuntu17.10-artful -> (code=exited, status=226/NAMESPACE) #}
 ReadWritePaths=@UNBOUND_SYSCONF_DIR@ @UNBOUND_LOCALSTATE_DIR@ /run @UNBOUND_RUN_DIR@
 {% endif %}
 RestrictAddressFamilies=AF_INET AF_UNIX
 RestrictRealtime=true
 SystemCallArchitectures=native
+{% if ansible_os_family != 'Debian' and ansible_distribution_release != 'artful' %}
 SystemCallFilter=~@clock @cpu-emulation @debug @keyring @module mount @obsolete @resources
+{% endif %}
