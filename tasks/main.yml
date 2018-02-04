@@ -41,7 +41,7 @@
 
 - name: Update $PATH when compiled
   import_tasks: update-path.yml
-  when: ansible_os_family != 'OpenBSD' and unbound_compile is defined and unbound_compile == true and ('/usr/local/sbin' not in ansible_env.PATH or unbound_compile_version not in unbound_version.stdout)
+  when: ansible_os_family != 'OpenBSD' and unbound_compile is defined and unbound_compile == true and '/usr/local/sbin' not in ansible_env.PATH
 
 - name: Get unbound version
   shell: "unbound -h | grep Version | cut -d ' ' -f2"
@@ -112,10 +112,14 @@
   when: ansible_os_family == 'RedHat' and auto_trust_anchor_file.stat.exists == True and is_bind_format.stdout != ""
 ### endfix
 
+## ToDo centos/vagrant fails -> "unable to open /usr/local/etc/unbound/root.key for reading: No such file or directory"
+## Possible fix: create a blank file (touch), or make sure are are root (this works when typing the command manually)
+
 - name: Setup or update of the root trust anchor for DNSSEC validation
   # command: "unbound-anchor -a {{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}} -c {{unbound.server.directory}}/icannbundle.pem"
   command: unbound-anchor -a "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
   register: unbound_anchor_result
+  # become: true
   changed_when: "unbound_anchor_result.rc == 1"
   failed_when: "unbound_anchor_result.rc == 2"
   # Return value 1 = updated
