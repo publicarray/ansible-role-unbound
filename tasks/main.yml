@@ -4,6 +4,13 @@
     file: "{{ ansible_os_family }}.yml"
   tags: [always]
 
+- name: combine vars
+  set_fact:
+    unbound: "{{_unbound_config|combine(unbound|default({}), unbound_host|default({}), recursive=True)}}"
+
+# - debug:
+#     var: unbound
+
 - name: Display init system
   debug:
     var: ansible_service_mgr

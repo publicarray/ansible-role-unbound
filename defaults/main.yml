@@ -76,7 +76,7 @@ unbound_tls_acme_custom:
 ## Main unbound configuration
 # See <https://unbound.net/documentation/unbound.conf.html> for more options and detailed descriptions
 # Note: In Ansible the variables must use underscores (_) not dashes (-) as separators
-unbound:
+_unbound_config:
   server:
     verbosity: 1
     # interface: [127.0.0.1, "::1"]
