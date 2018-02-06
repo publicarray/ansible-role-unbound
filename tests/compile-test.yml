@@ -9,12 +9,6 @@
           use_syslog: no
           log_time_ascii: yes
           logfile: unbound.log
-          auto_trust_anchor_file: root.key
-          root_hints: root.hints
-          directory: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
-          chroot: "{{_unbound.conf_dir if unbound_compile == false else \"/usr/local/etc/unbound\"}}"
-          pidfile: "/var/run/unbound.pid"
-          username: "{{_unbound.user}}"
           access_control: 0.0.0.0/0 allow
           interface: [0.0.0.0, 0.0.0.0@853, '::0@853']
           ssl_service_key: private.key
