@@ -106,7 +106,7 @@
   template:
     src: "dehydrated-cron.sh"
     dest: "{{unbound_tls_dehydrated_src}}/dehydrated-cron.sh"
-    mode: 755
+    mode: 0755
 
 - name: Setup cron job (run every-7-days)
   cron:

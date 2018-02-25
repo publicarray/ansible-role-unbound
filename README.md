@@ -1,5 +1,4 @@
-Ansible-Role-Unbound
-=========
+# Ansible-Role-Unbound
 
 [![Build Status](https://travis-ci.org/publicarray/ansible-role-unbound.svg?branch=master)](https://travis-ci.org/publicarray/ansible-role-unbound)
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-publicarray.unbound-blue.svg?style=flat)](https://galaxy.ansible.com/publicarray/unbound/)
@@ -9,11 +8,10 @@ Highly-configurable Ansible role for Unbound DNS resolver
  - Ansible 2.2+
  - Compatible with systems that have systemd as their init system. Latest versions of Ubuntu/Debian, RHEL/CentOS 6.x and freeBSD
 
-Contents
---------
+## Contents
 
  1. [Installation](#installation)
- 1. [Examples / common use-cases](#examples--common-use-cases)
+ 1. [Examples and common use-cases](#examples-and-common-use-cases)
  1. [Requirements](#requirements)
  1. [Role Variables](#role-variables)
  1. [Dependencies](#dependencies)
@@ -22,25 +20,25 @@ Contents
     1. [with molecule](#with-molecule)
     1. [with geerlingguy's script](#with-geerlingguys-script)
 
-Installation
-------------
+## Installation
 
 ```bash
 $ ansible-galaxy install publicarray.unbound
 ```
 
-Examples / common use-cases
---------
+## Examples and common use-cases
 
-See the wiki: [Examples](https://github.com/publicarray/ansible-role-unbound/wiki/Examples)
+Please see the wiki: [Examples](https://github.com/publicarray/ansible-role-unbound/wiki/Examples)
 
-Requirements
-------------
+## Dependencies
+
+Ansible 2.2+
+
+## Requirements
 
 none
 
-Role Variables
---------------
+## Role Variables
 
 Here is a list of the default variables for this role. They are also available in `defaults/main.yml`.
 I recommend that you copy and paste the variables below to your `group_vars/all/configs` file and that you look at unbound's documentation: https://unbound.net/documentation/unbound.conf.html
@@ -50,9 +48,9 @@ I recommend that you copy and paste the variables below to your `group_vars/all/
 # Whether to compile unbound from source or to use the package manager.
 unbound_compile: false
 # The unbound version to download the source from <https://unbound.net/download.html>
-unbound_compile_version: 1.6.7
+unbound_compile_version: 1.6.8
 # Checksum to compare the download the file against <https://unbound.net/download.html>
-unbound_compile_sha256: 4e7bd43d827004c6d51bef73adf941798e4588bdb40de5e79d89034d69751c9f
+unbound_compile_sha256: e3b428e33f56a45417107448418865fe08d58e0e7fea199b855515f60884dd49
 # The arguments given to the `./configure` command. <!--Solaris users should use --with-solaris-threads -->
 unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
 
@@ -79,12 +77,12 @@ unbound_tls_acme_ca: https://acme-v01.api.letsencrypt.org/directory
 # https://letsencrypt.org/docs/staging-environment/
 # NOTE: when changing from staging to production you need to set 'unbound_tls_acme_force' to true.
 unbound_tls_acme_staging: false
-# Force create a cert (ignore expiation date)
+# Force create a cert (ignore expiration date)
 unbound_tls_acme_force: false
 # Domain validation mode. Available modes are standalone, stateless, tls, apache, dns [dns_cf|dns_dp|dns_cx|/path/to/api/file]
 unbound_tls_acme_mode: dns dns_cf
 # Set env variables for using DNS as domain validation
-# Please see https://github.com/limaomei1986/acme.sh/blob/master/dnsapi/README.md for details
+# Please see https://github.com/Neilpang/acme.sh/tree/master/dnsapi#how-to-use-dns-api for details
 unbound_tls_acme_dns_acc:
   # CloudFlare email address
   CF_Email:
@@ -147,15 +145,11 @@ unbound:
 
 ```
 
-
-
-Dependencies
-------------
+## Dependencies
 
 none
 
-Example Playbook
-----------------
+## Example Playbook
 
 ```yml
 ---
@@ -170,13 +164,7 @@ Example Playbook
 $ ansible-playbook -i dns.example.com, playbook.yml
 ```
 
-[License](LICENSE)
--------
-
-[MIT](https://opensource.org/licenses/MIT)/[BSD](https://opensource.org/licenses/BSD-2-Clause)
-
-Testing
--------
+## Testing
 
 ### with [molecule](https://molecule.readthedocs.io)
 
@@ -226,3 +214,11 @@ Example in fish shell:
 $ set -x distro debian9; set -x playbook package-test.yml; set -x cleanup false; set -x container_id (date +%s); ./tests/test.sh
 $ set -x distro debian9; set -x playbook compile-test.yml; set -x cleanup false; set -x container_id (date +%s); ./tests/test.sh
 ```
+
+## [License](LICENSE)
+
+[MIT](https://opensource.org/licenses/MIT)/[BSD](https://opensource.org/licenses/BSD-2-Clause)
+
+## Author Information
+
+@publicarray
