@@ -1,4 +1,5 @@
 ---
+_unbound_munin_path: /usr/local/etc/munin
 _unbound:
   pip: py27-pip
   # python_dev:

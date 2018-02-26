@@ -10,7 +10,7 @@ unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.user
 
 # Install munin plugin
 unbound_munin: false
-unbound_munin_path: /etc/munin # For FreeBSD it is: /usr/local/etc/munin
+unbound_munin_path: "{{_unbound_munin_path|default('/etc/munin')}}"
 
 # Whether to use the optimisation guidelines from <http://unbound.nlnetlabs.nl/documentation/howto_optimise.html>
 unbound_optimise: false

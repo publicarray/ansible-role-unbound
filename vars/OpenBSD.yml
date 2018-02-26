@@ -1,4 +1,5 @@
 ---
+_unbound_munin_path: /etc/munin
 _unbound:
   pip: py-pip
   # python_dev:
