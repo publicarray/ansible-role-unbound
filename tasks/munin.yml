@@ -24,44 +24,44 @@
   file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_class"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_flags"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_opcode"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_rcode"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_type"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_histogram"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_hits"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_memory"
-    state: hard
+    state: link
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_queue"
-    state: hard
+    state: link
