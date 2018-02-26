@@ -8,6 +8,10 @@ unbound_compile_sha256: e3b428e33f56a45417107448418865fe08d58e0e7fea199b855515f6
 # The arguments given to the `./configure` command. <!--Solaris users should use --with-solaris-threads -->
 unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
 
+# Install munin plugin
+unbound_munin: false
+unbound_munin_path: /usr/local/etc/munin
+
 # Whether to use the optimisation guidelines from <http://unbound.nlnetlabs.nl/documentation/howto_optimise.html>
 unbound_optimise: false
 # Percentage of physical memory to use for unbound. Only used when `unbound_optimise` is true

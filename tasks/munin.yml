@@ -1,0 +1,67 @@
+---
+
+- name: Get unbound_munin script from github
+  get_url:
+    url: https://raw.githubusercontent.com/NLnetLabs/unbound/master/contrib/unbound_munin_
+    dest: "{{unbound.server.directory}}/unbound_munin_"
+
+- name: Make munin plugin-conf.d directory
+  file:
+    dest: "{{unbound_munin_path}}/plugin-conf.d/"
+    state: directory
+
+- name: Install munin.conf for unbound
+  template:
+    src: munin.conf
+    dest: "{{unbound_munin_path}}/plugin-conf.d/unbound.conf"
+
+- name: Make munin plugins directory
+  file:
+    dest: "{{unbound_munin_path}}/plugins/"
+    state: directory
+
+- name: Install munin script for unbound
+  file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_class"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_flags"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_opcode"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_rcode"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_type"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_histogram"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_hits"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_memory"
+    state: hard
+
+- file:
+    src: "{{unbound.server.directory}}/unbound_munin_"
+    dest: "{{unbound_munin_path}}/plugins/unbound_munin_queue"
+    state: hard

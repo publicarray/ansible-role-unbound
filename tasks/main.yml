@@ -35,6 +35,10 @@
   import_tasks: compile.yml
   when: ansible_os_family != 'OpenBSD' and (unbound_compile is defined and unbound_compile) # unbound_compile == true
 
+- name: Prepar munin plugin
+  import_tasks: munin.yml
+  when: unbound_munin is defined and unbound_munin_path is defined and unbound_munin
+
 - name: Ensure local_unbound (old) is stopped and disabled - FreeBSD
   service:
     name: local_unbound

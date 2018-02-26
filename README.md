@@ -28,7 +28,7 @@ $ ansible-galaxy install publicarray.unbound
 
 ## Examples and common use-cases
 
-Please see the wiki: [Examples](https://github.com/publicarray/ansible-role-unbound/wiki/Examples)
+See the wiki: [Examples](https://github.com/publicarray/ansible-role-unbound/wiki/Examples)
 
 ## Dependencies
 
