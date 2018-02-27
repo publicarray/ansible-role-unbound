@@ -2,9 +2,6 @@
 _unbound_munin_path: /etc/munin
 _unbound:
   pip: py-pip
-  # python_dev:
-  # libffi_dev:
-  # openssl_dev:
   user: _unbound
   conf_dir: /var/unbound/etc
   # dependencies:

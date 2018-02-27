@@ -1,59 +1,10 @@
 ---
-- name: Install libssl-dev - Debian
-  package:
-    name: "{{_unbound.openssl_dev}}"
-    state: present
-  when: ansible_os_family == 'Debian'
-
-- name: Install python-dev and libffi-dev - Ubuntu trusty
-  package:
-    name: "{{item}}"
-    state: present
-  with_items:
-    - "{{_unbound.libffi_dev}}"
-    - "{{_unbound.python_dev}}"
-    # - python-openssl || pyOpenSSL
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
-
-- name: Install pip
-  package:
-    name: "{{_unbound.pip}}"
-    state: present
-
-- name: Install py-OpenSSL - OpenBSD
-  package:
-    name: "py-openssl"
-    state: present
-  when: ansible_os_family == 'OpenBSD'
-
-- name: Install pyOpenSSL
-  pip:
-    name: "{{item}}"
-    state: latest
-  with_items:
-    - setuptools
-    - pip
-    - pyopenssl
-  tags:
-    - skip_ansible_lint
-  when: not ansible_check_mode and ansible_os_family != 'OpenBSD'
-
-- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
-  openssl_privatekey:
-    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
-  when: not ansible_check_mode
-
-- name: Generate an OpenSSL Certificate Signing Request
-  openssl_csr:
-    path: "{{unbound.server.directory}}/request.csr"
-    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
-    common_name: "{{unbound_tls_domain}}"
-  when: not ansible_check_mode
-
-- name: Generate a Self Signed OpenSSL certificate
-  openssl_certificate:
-    path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
-    privatekey_path: "{{unbound.server.directory}}/{{unbound.server.ssl_service_key}}"
-    csr_path: "{{unbound.server.directory}}/request.csr"
-    provider: "{{unbound_tls_cert_provider}}"
-  when: not ansible_check_mode
+- name: Generate an OpenSSL private 4096 bits RSA key and certificate
+  shell: |
+    openssl req -x509 -newkey rsa:4096 -sha256 -nodes \
+      -keyout {{unbound.server.directory}}/{{unbound.server.ssl_service_key}} \
+      -out {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}} \
+      -subj '/CN={{unbound_tls_domain}}' -days 99990
+  args:
+    chdir: "{{unbound.server.directory}}"
+    creates: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
