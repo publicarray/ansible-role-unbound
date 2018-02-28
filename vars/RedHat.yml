@@ -5,6 +5,7 @@ _unbound:
   cron: crontabs
   user: unbound
   conf_dir: /etc/unbound
+  reloadcmd: service unbound restart
   pidfile: /var/run/unbound.pid
   dependencies:
     - ldns-devel

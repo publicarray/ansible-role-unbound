@@ -82,8 +82,10 @@
     url: https://www.internic.net/domain/named.root
     dest: "{{unbound.server.directory}}/{{unbound.server.root_hints}}"
 
+# The trusted self-signed certificate that is used to verify the downloaded DNSSEC root trust anchor.
 # https://www.iana.org/dnssec/files
-# - name: Get ICANN certificates for S/MIME signature (inbuild cert is valid until 2029)
+# https://data.iana.org/root-anchors/
+# - name: Get ICANN certificates for S/MIME signature (in-build cert is valid until 2029)
 #   get_url:
 #     url: https://data.iana.org/root-anchors/icannbundle.pem
 #     dest: "{{unbound.server.directory}}/icannbundle.pem"
@@ -125,7 +127,9 @@
   register: unbound_anchor_result
   changed_when: "unbound_anchor_result.rc == 1"
   failed_when: "unbound_anchor_result.rc == 2"
-  # Return value 1 = updated
+  # args:
+  #   creates: "{{unbound.server.directory}}/{{unbound.server.auto_trust_anchor_file}}"
+  # # Return value 1 = updated using the certificate or the builtin root-anchor
   # Return value 0 = no update was necessary, updated with RFC5011tracking, or an error occurred
 
 - name: Setup unbound-control keys

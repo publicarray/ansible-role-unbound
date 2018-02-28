@@ -4,7 +4,7 @@
     openssl req -x509 -newkey rsa:4096 -sha256 -nodes \
       -keyout {{unbound.server.directory}}/{{unbound.server.ssl_service_key}} \
       -out {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}} \
-      -subj '/CN={{unbound_tls_domain}}' -days 99990
+      -subj '/CN={{unbound_tls_domain}}' -days 99999
   args:
     chdir: "{{unbound.server.directory}}"
     creates: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"
