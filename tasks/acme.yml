@@ -60,7 +60,7 @@
     --keylength {{unbound_tls_acme_keysize|default('2048', true)}}
     --key-file {{unbound.server.directory}}/{{unbound.server.ssl_service_key}}
     --fullchain-file {{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}
-    --reloadcmd 'service unbound restart' {{unbound_tls_acme_custom}}
+    --reloadcmd '{{_unbound.reloadcmd}}' {{unbound_tls_acme_custom}}
   args:
     executable: /bin/sh
     creates: "{{unbound.server.directory}}/{{unbound.server.ssl_service_pem}}"

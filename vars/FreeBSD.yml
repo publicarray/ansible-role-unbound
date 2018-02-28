@@ -4,6 +4,7 @@ _unbound:
   pip: py27-pip
   user: unbound
   conf_dir: /usr/local/etc/unbound
+  reloadcmd: service unbound restart
   dependencies:
     - libevent
     - libsodium

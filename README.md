@@ -191,6 +191,7 @@ Credits for the test script go to @geerlingguy
 
 Distros:
  + centos7
+ + fedora27
  + ubuntu1604
  + ubuntu1404
  + debian9

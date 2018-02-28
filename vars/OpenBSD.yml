@@ -4,4 +4,5 @@ _unbound:
   pip: py-pip
   user: _unbound
   conf_dir: /var/unbound/etc
+  reloadcmd: /etc/rc.d/unbound -f restart
   # dependencies:
