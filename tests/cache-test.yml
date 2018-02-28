@@ -1,0 +1,38 @@
+---
+- hosts: all
+  roles:
+    - role_under_test
+  vars:
+    - unbound:
+        server:
+          interface: 127.0.0.1  # fix no ipv6 in docker
+          cache_max_ttl: 14400
+          cache_min_ttl: 900
+          prefetch: yes
+          prefetch_key: yes
+        remote_control:
+          control_enable: false
+      forward_zone:  # https://gist.github.com/roge-/e7d926a3b3551a0f3769 https://gist.github.com/kometchtech/8c1b91ec427b264fbe97
+        name: "."                 # https://public-dns.info/
+        forward_addr:
+          - 9.9.9.9               # Quad9(https://www.quad9.net/) - blocklist
+          - 2620:fe::fe           # Quad9(https://www.quad9.net/) - blocklist
+          - 9.9.9.10              # Quad9(https://www.quad9.net/) - no blocklist
+          - 2620:fe::10           # Quad9(https://www.quad9.net/) - no blocklist
+          - 8.8.4.4               # Google(https://developers.google.com/speed/public-dns/)
+          - 8.8.8.8               # Google(https://developers.google.com/speed/public-dns/)
+          - 2001:4860:4860::8888  # Google(https://developers.google.com/speed/public-dns/)
+          - 2001:4860:4860::8844  # Google(https://developers.google.com/speed/public-dns/)
+          - 208.67.222.220        # OpenDNS(https://www.opendns.com/ https://umbrella.cisco.com/)
+          - 208.67.222.222        # OpenDNS(https://www.opendns.com/ https://umbrella.cisco.com/)
+          - 185.121.177.177       # OpenNIC(https://www.opennic.org/)
+          - 64.6.64.6             # Verisign(https://www.verisign.com/en_US/security-services/public-dns/index.xhtml)
+          - 64.6.65.6             # Verisign(https://www.verisign.com/en_US/security-services/public-dns/index.xhtml)
+          - 37.235.1.174          # FreeDNS(https://freedns.zone/)
+          - 37.235.1.177          # FreeDNS(https://freedns.zone/)
+          - 84.200.69.80          # DNS Watch(https://dns.watch/index)
+          - 84.200.70.40          # DNS Watch(https://dns.watch/index)
+          - 2001:1608:10:25::1c04:b12f  # DNS Watch(https://dns.watch/index)
+          - 2001:1608:10:25::9249:d69   # DNS Watch(https://dns.watch/index)
+          - 91.239.100.100        # UncensoredDNS(https://blog.uncensoreddns.org/)
+          - '2001:67c:28a4::'     # UncensoredDNS(https://blog.uncensoreddns.org/)
