@@ -13,8 +13,9 @@ galaxy_info:
         - stretch
     - name: Ubuntu
       versions:
-        - xenial
         - trusty
+        - xenial
+        - artful
     - name: Fedora
       versions:
         - 16
@@ -24,6 +25,9 @@ galaxy_info:
       versions:
         - 11.0
         - 11.1
+    - name: OpenBSD
+      versions:
+        - 6
   galaxy_tags:
     - unbound
     - dns
