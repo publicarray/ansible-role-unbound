@@ -48,9 +48,9 @@ I recommend that you copy and paste the variables below to your `group_vars/all/
 # Whether to compile unbound from source or to use the package manager.
 unbound_compile: false
 # The unbound version to download the source from <https://unbound.net/download.html>
-unbound_compile_version: 1.6.8
+unbound_compile_version: 1.7.0
 # Checksum to compare the download the file against <https://unbound.net/download.html>
-unbound_compile_sha256: e3b428e33f56a45417107448418865fe08d58e0e7fea199b855515f60884dd49
+unbound_compile_sha256: 94dd9071fb13d8ccd122a3ac67c4524a3324d0e771fc7a8a7c49af8abfb926a2
 # The arguments given to the `./configure` command. <!--Solaris users should use --with-solaris-threads -->
 unbound_compile_config: "--enable-dnscrypt --with-username={{unbound.server.username|default(unbound)}} --with-libevent --with-run-dir={{unbound.server.directory}} --with-conf-file={{unbound.server.directory}}/unbound.conf"
 
