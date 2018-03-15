@@ -4,10 +4,16 @@
   get_url:
     url: https://raw.githubusercontent.com/NLnetLabs/unbound/master/contrib/unbound_munin_
     dest: "{{unbound.server.directory}}/unbound_munin_"
+    mode: 0755
 
 - name: Make munin plugin-conf.d directory
   file:
     dest: "{{unbound_munin_path}}/plugin-conf.d/"
+    state: directory
+
+- name: Make munin unbound-state directory
+  file:
+    dest: "{{ unbound_munin_path }}/plugin-state/"
     state: directory
 
 - name: Install munin.conf for unbound
@@ -25,43 +31,52 @@
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_class"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_flags"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_opcode"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_rcode"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_by_type"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_histogram"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_hits"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_memory"
     state: link
+  when: not ansible_check_mode
 
 - file:
     src: "{{unbound.server.directory}}/unbound_munin_"
     dest: "{{unbound_munin_path}}/plugins/unbound_munin_queue"
     state: link
+  when: not ansible_check_mode
