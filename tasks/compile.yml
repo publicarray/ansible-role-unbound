@@ -47,7 +47,7 @@
 
 - name: Get unbound source
   get_url:
-    url: "https://unbound.nlnetlabs.nl/downloads/unbound-{{unbound_compile_version}}.tar.gz"
+    url: "https://nlnetlabs.nl/downloads/unbound/unbound-{{unbound_compile_version}}.tar.gz"
     dest: /usr/local/src/unbound-{{unbound_compile_version}}.tar.gz
     checksum: "sha256:{{ unbound_compile_sha256 }}"
   when: ansible_os_family != 'FreeBSD'
