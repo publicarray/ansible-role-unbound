@@ -4,19 +4,19 @@ services: docker
 env:
     - distro=centos7 playbook=package-test.yml
     - distro=ubuntu1604 playbook=package-test.yml
-    - distro=ubuntu1404 playbook=package-test.yml
+    # - distro=ubuntu1404 playbook=package-test.yml
     - distro=debian9 playbook=package-test.yml
     - distro=debian8 playbook=package-test.yml
 
     - distro=centos7 playbook=compile-test.yml
     - distro=ubuntu1604 playbook=compile-test.yml
-    - distro=ubuntu1404 playbook=compile-test.yml
+    # - distro=ubuntu1404 playbook=compile-test.yml
     - distro=debian9 playbook=compile-test.yml
     - distro=debian8 playbook=compile-test.yml
 matrix:
   allow_failures:
-    # - env: distro=ubuntu1404 playbook=package-test.yml
-    # - env: distro=ubuntu1404 playbook=compile-test.yml
+    - env: distro=ubuntu1404 playbook=package-test.yml
+    - env: distro=ubuntu1404 playbook=compile-test.yml
     - env: distro=debian8 playbook=package-test.yml
     - env: distro=debian8 playbook=compile-test.yml
 
